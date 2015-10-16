@@ -1,0 +1,6 @@
+num_of_paths=3
+num_of_nodes=11
+n_value=4
+path_1=U, p11, p12, p13, V
+path_2=U, p21, p22, p23, p24, V
+path_3=U, p31, p32, V
