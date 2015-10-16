@@ -78,6 +78,7 @@ public class Verifier extends Node implements Runnable {
 
 				}
 				this.phaseTwo(i);
+				
 				leftLink.setFlag(leftLink.getLeftNode());
 				startClock = System.nanoTime();
 				leftLink.notify();
@@ -177,14 +178,31 @@ public class Verifier extends Node implements Runnable {
 
 	public void phaseThree() {
 
-		this.validateOpeningAndSignatures();
-		this.validateChallengeAndResponses();
-		this.validateCommitmentAndSignatures();
-		this.validateOpeningsAndCommitments();
+		int unmatchedOpeningsandSigns=this.validateOpeningAndSignatures();
+		boolean isChallengeResponsesConsistent=this.validateChallengeAndResponses();
+		int unmatchedCommitmentsandSigns=this.validateCommitmentAndSignatures();
+		int unmatchedOpeningsandCommits=this.validateOpeningsAndCommitments();
+		if(unmatchedOpeningsandSigns==0 && isChallengeResponsesConsistent && unmatchedCommitmentsandSigns==0 && unmatchedOpeningsandCommits==0){
+			System.out.println("!!!!!Everything is OK!!!!!");
+		}
+		else{
+			if(unmatchedOpeningsandSigns>0){
+				System.out.println("There are "+unmatchedOpeningsandSigns+" unmatched openings and signatures");
+			}
+			if(unmatchedCommitmentsandSigns>0){
+				System.out.println("There are "+unmatchedCommitmentsandSigns+" unmatched commitments and signatures");
+			}
+			if(unmatchedOpeningsandCommits>0){
+				System.out.println("There are "+unmatchedOpeningsandCommits+" unmatched openings and commitments");
+			}
+			if(! isChallengeResponsesConsistent){
+				System.out.println("There are inconsistent challenges and responses");
+			}
+		}
 
 	}
 
-	private void validateOpeningAndSignatures() {
+	private int validateOpeningAndSignatures() {
 		System.out.println("->->->->->->Validating Openings and Signatures");
 		TrustedThirdParty ttp = TrustedThirdParty.getInstance();
 
@@ -192,6 +210,7 @@ public class Verifier extends Node implements Runnable {
 		HashMap<String, byte[]> signedOpenings = ttp.getSignedOpenings();
 
 		boolean isOK = false;
+		int falseCount=0;
 
 		for (int i = 0; i < users.length - 1; i++) {
 			String user = users[i];
@@ -203,6 +222,9 @@ public class Verifier extends Node implements Runnable {
 						this.constructProverOpening(openings.get(user)),
 						signedOpenings.get(user),
 						ttp.getUserPublicKey_Sign(user));
+				if(!isOK){
+					falseCount++;
+				}
 				System.out.println("Node=U, Opening= " + new String(open)
 						+ ", is opening signature valid = " + isOK);
 
@@ -211,19 +233,26 @@ public class Verifier extends Node implements Runnable {
 				isOK = this.verifyData(openings.get(user),
 						signedOpenings.get(user),
 						ttp.getUserPublicKey_Sign(user));
+				if(!isOK){
+					falseCount++;
+				}
 				System.out.println("Node=" + user + ", Opening= "
 						+ new String(open) + ", is opening signature valid = "
 						+ isOK);
 
 			}
 		}
+		
+		System.out.println("False count="+falseCount);
 
 		System.out
 				.println("->->->->->->Validating Openings and Signatures DONE!!!");
+		
+		return falseCount;
 
 	}
 
-	private void validateChallengeAndResponses() {
+	private boolean validateChallengeAndResponses() {
 		int rounds = this.getN();
 		String proverOffset = "";
 
@@ -243,10 +272,12 @@ public class Verifier extends Node implements Runnable {
 
 		boolean isOK = open.equals(proverOffset);
 		System.out.println("is prover offset valid?= " + isOK);
+		
+		return isOK;
 
 	}
 
-	private void validateCommitmentAndSignatures() {
+	private int validateCommitmentAndSignatures() {
 		System.out.println("->->->->->->Validating Commitments and Signatures");
 		TrustedThirdParty ttp = TrustedThirdParty.getInstance();
 
@@ -254,23 +285,30 @@ public class Verifier extends Node implements Runnable {
 		HashMap<String, byte[]> signedCommits = ttp.getSignedCommits();
 
 		boolean isOK = false;
+		int falseCount=0;
 
 		for (int i = 0; i < users.length - 1; i++) {
 			String user = users[i];
 
 			isOK = this.verifyData(commits.get(user), signedCommits.get(user),
 					ttp.getUserPublicKey_Sign(user));
+			if(!isOK){
+				falseCount++;
+			}
 			System.out.println("Node=" + user
 					+ ", is commitment signature valid = " + isOK);
 
 		}
 
+		System.out.println("False count="+falseCount);
 		System.out
 				.println("->->->->->->Validating Commitment and Signatures DONE!!!");
+		return falseCount;
+		
 
 	}
 
-	private void validateOpeningsAndCommitments() {
+	private int validateOpeningsAndCommitments() {
 		System.out.println("->->->->->->Validating Openings and Commitments");
 		TrustedThirdParty ttp = TrustedThirdParty.getInstance();
 
@@ -278,6 +316,7 @@ public class Verifier extends Node implements Runnable {
 		HashMap<String, byte[]> commits = ttp.getCommits();
 
 		boolean isOK = false;
+		int falseCount=0;
 
 		for (int i = 0; i < users.length - 1; i++) {
 			String user = users[i];
@@ -285,6 +324,9 @@ public class Verifier extends Node implements Runnable {
 
 				byte[] open = this.decryptData(openings.get(user), esk);
 				isOK = this.checkCommit(open, commits.get(user));
+				if(!isOK){
+					falseCount++;
+				}
 				System.out
 						.println("Node=U does opening and commitment match? = "
 								+ isOK);
@@ -292,13 +334,18 @@ public class Verifier extends Node implements Runnable {
 			} else {
 
 				isOK = this.checkCommit(openings.get(user), commits.get(user));
+				if(!isOK){
+					falseCount++;
+				}
 				System.out.println("Node=" + user
 						+ " does opening and commitment match? = " + isOK);
 			}
 		}
 
+		System.out.println("False count="+falseCount);
 		System.out
 				.println("->->->->->->Validating Openings and Commitments DONE!!!");
+		return falseCount;
 
 	}
 

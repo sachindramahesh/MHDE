@@ -137,6 +137,14 @@ public class Proxy extends Node implements Runnable {
 		this.getLeftLink().setData_0(temp);		
 		String challenge=this.getRightLink().getChallenge();
 		this.getLeftLink().setChallenge(challenge);
+		try {
+			Thread.sleep(1000);
+			System.out.println("delayed 1000ms by "+this.getName());
+
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void phaseTwo_second(int round) {
@@ -147,6 +155,14 @@ public class Proxy extends Node implements Runnable {
 		String offsetBit=this.bitAt(this.getN_bitString(), round);
 		String response=this.xorBits(challenge, offsetBit);
 		this.getRightLink().setResponse(response);
+		try {
+			Thread.sleep(1000);
+			System.out.println("delayed 1000ms by "+this.getName());
+
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void phaseThree(){

@@ -118,6 +118,15 @@ public class Prover extends Node implements Runnable {
 		
 		this.response[round]=resp;
 		this.getRightLink().setResponse(resp);
+		
+		try {
+			Thread.sleep(1000);
+			System.out.println("delayed 1000ms by "+this.getName());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 
 	}
 
