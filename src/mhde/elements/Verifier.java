@@ -8,7 +8,6 @@ import java.util.HashMap;
 
 public class Verifier extends Node implements Runnable {
 
-	public static int start = 0;
 
 	private String path;
 	private String[] users;
@@ -23,6 +22,10 @@ public class Verifier extends Node implements Runnable {
 	private String secretKey_K;
 
 	private PrivateKey esk;
+	
+	private Link l_link;
+	
+	private int rounds;
 
 	public Verifier(String name, Link leftLink, KeyPair kp, String path, int n,
 			String k, PrivateKey esk) {
@@ -36,29 +39,30 @@ public class Verifier extends Node implements Runnable {
 		this.secretKey_K = k;
 		this.esk = esk;
 		users = path.split("\\s*,\\s*");
+		this.l_link=leftLink;
+		this.rounds=n;
+		
 
 		System.out.println(this.getName() + "'s n-bit secret "
 				+ this.secretKey_K);
 	}
 
 	public void run() {
-		Link leftLink = this.getLeftLink();
 		long startClock = 0;
 		long endClock = 0;
 
-		synchronized (leftLink) {
+		synchronized (l_link) {
 			this.phaseZero();
-			leftLink.setFlag(leftLink.getLeftNode());
-			leftLink.notify();
+			l_link.setFlag(l_link.getLeftNode());
+			l_link.notify();
 		}
 
-		int rounds = this.getN();
 
 		for (int i = 0; i < rounds; i++) {
-			synchronized (leftLink) {
-				if (!leftLink.getFlag().equals(this.getName())) {
+			synchronized (l_link) {
+				if (!l_link.getFlag().equals(this.getName())) {
 					try {
-						leftLink.wait();
+						l_link.wait();
 					} catch (InterruptedException e) {
 					}
 				}
@@ -78,21 +82,21 @@ public class Verifier extends Node implements Runnable {
 				}
 				this.phaseTwo(i);
 
-				leftLink.setFlag(leftLink.getLeftNode());
+				l_link.setFlag(l_link.getLeftNode());
 				startClock = System.nanoTime();
-				leftLink.notify();
+				l_link.notify();
 			}
 
 		}
 
-		synchronized (leftLink) {
-			if (!leftLink.getFlag().equals(this.getName())) {
+		synchronized (l_link) {
+			if (!l_link.getFlag().equals(this.getName())) {
 				try {
-					leftLink.wait();
+					l_link.wait();
 				} catch (InterruptedException e) {
 				}
 			}
-			this.response[rounds - 1] = leftLink.getResponse();
+			this.response[rounds - 1] = l_link.getResponse();
 			endClock = System.nanoTime();
 			this.timeLapse[rounds - 1] = endClock - startClock;
 			System.out.println(this.getName() + " @round=" + (rounds - 1)
@@ -108,15 +112,15 @@ public class Verifier extends Node implements Runnable {
 
 			// this.phaseThreeDummy();
 
-			leftLink.setFlag(leftLink.getLeftNode());
-			leftLink.notify();
+			l_link.setFlag(l_link.getLeftNode());
+			l_link.notify();
 
 		}
 
-		synchronized (leftLink) {
-			if (!leftLink.getFlag().equals(this.getName())) {
+		synchronized (l_link) {
+			if (!l_link.getFlag().equals(this.getName())) {
 				try {
-					leftLink.wait();
+					l_link.wait();
 				} catch (InterruptedException e) {
 				}
 			}
@@ -133,9 +137,9 @@ public class Verifier extends Node implements Runnable {
 
 	public void phaseZero() {
 
-		Link leftLink = this.getLeftLink();
+		//Link leftLink = this.getLeftLink();
 		byte[] sign = this.signData(path.getBytes());
-		leftLink.setPhase0_data(path.getBytes(), sign);
+		l_link.setPhase0_data(path.getBytes(), sign);
 
 		System.out
 				.println("---------------------PHASE-0 STARTED----------------- ");
@@ -156,7 +160,7 @@ public class Verifier extends Node implements Runnable {
 		String challenge = RandomNumberGenerator.getInstance()
 				.nextRandomNumber(1);
 		this.challenge[round] = challenge;
-		this.getLeftLink().setChallenge(challenge);
+		l_link.setChallenge(challenge);
 
 	}
 
@@ -244,7 +248,6 @@ public class Verifier extends Node implements Runnable {
 	}
 
 	private boolean validateChallengeAndResponses() {
-		int rounds = this.getN();
 		String proverOffset = "";
 
 		for (int i = 0; i < rounds; i++) {
@@ -385,7 +388,6 @@ public class Verifier extends Node implements Runnable {
 	}
 
 	private void constructTranscript() {
-		int rounds = this.getN();
 
 		for (int i = 0; i < rounds; i++) {
 			transcript[2 * i] = challenge[i];

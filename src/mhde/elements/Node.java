@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
+
 import javax.crypto.Cipher;
 
 public abstract class Node implements Runnable {
@@ -186,6 +187,16 @@ public abstract class Node implements Runnable {
 			return "0";
 		else
 			return "1";
+	}
+	
+	public void delay(){
+		try {
+			Thread.sleep(1000);
+			System.out.println("delayed 1000ms by " + this.getName());
+
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
