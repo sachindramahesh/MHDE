@@ -6,9 +6,7 @@ public class Proxy extends Node implements Runnable {
 	
 	
 
-	public Proxy() {
-		super();
-	}
+	
 
 	public Proxy(String name, Link leftLink, Link rightLink, KeyPair kp, int n) {
 		super(name, leftLink, rightLink, kp, n);
@@ -102,26 +100,24 @@ public class Proxy extends Node implements Runnable {
 	}
 
 	public void phaseZero() {
+		
 		Link rightLink = this.getRightLink();
 		Link leftLink = this.getLeftLink();
-
-		int temp = rightLink.getData_0();
-		leftLink.setData_0(temp);
-
-		boolean verifies = this.verifyData(rightLink.getPhase0_data(),
-				rightLink.getPhase0_sign(),
-				TrustedThirdParty.getVerifierPublicKey_Sign());
+		
+		byte[][] data=rightLink.getPhase0_data();
+		byte[] path=data[0];
+		byte[] sign=data[1];		
+		
+		boolean verifies=this.verifyData(path, sign, TrustedThirdParty.getVerifierPublicKey_Sign());
 		System.out.println(this.getName() + " " + verifies);
-		leftLink.setPhase0_data(rightLink.getPhase0_data());
-		leftLink.setPhase0_sign(rightLink.getPhase0_sign());
+		leftLink.setPhase0_data(path, sign);
 
 	}
 
 	public void phaseOne() {
-		int temp = this.getLeftLink().getData_0();
-		this.getRightLink().setData_0(temp);
 
-		this.generate_n_bitString(this.getN());
+
+		this.setN_bitString(this.getN());
 		this.setOffset();
 		this.doCommit();
 		this.signCommit();
@@ -133,8 +129,8 @@ public class Proxy extends Node implements Runnable {
 	}
 
 	public void phaseTwo_first() {
-		int temp = this.getRightLink().getData_0();
-		this.getLeftLink().setData_0(temp);		
+//		int temp = this.getRightLink().getData_0();
+//		this.getLeftLink().setData_0(temp);		
 		String challenge=this.getRightLink().getChallenge();
 		this.getLeftLink().setChallenge(challenge);
 		try {
@@ -142,14 +138,12 @@ public class Proxy extends Node implements Runnable {
 			System.out.println("delayed 1000ms by "+this.getName());
 
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
 	public void phaseTwo_second(int round) {
-		int temp = this.getLeftLink().getData_0();
-		this.getRightLink().setData_0(temp);
+
 		
 		String challenge=this.getLeftLink().getResponse();
 		String offsetBit=this.bitAt(this.getN_bitString(), round);
@@ -160,7 +154,6 @@ public class Proxy extends Node implements Runnable {
 			System.out.println("delayed 1000ms by "+this.getName());
 
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

@@ -71,11 +71,14 @@ public class Prover extends Node implements Runnable {
 	}
 
 	public void phaseZero() {
+		
 		Link rightLink = this.getRightLink();
-
-		boolean verifies = this.verifyData(rightLink.getPhase0_data(),
-				rightLink.getPhase0_sign(),
-				TrustedThirdParty.getVerifierPublicKey_Sign());
+		
+		byte[][] data=rightLink.getPhase0_data();
+		byte[] path=data[0];
+		byte[] sign=data[1];		
+		
+		boolean verifies=this.verifyData(path, sign, TrustedThirdParty.getVerifierPublicKey_Sign());
 		System.out.println(this.getName() + " " + verifies);
 		
 		System.out.println("---------------------PHASE-0 COMPLETED----------------- ");
@@ -86,7 +89,7 @@ public class Prover extends Node implements Runnable {
 
 	public void phaseOne() {
 		System.out.println("---------------------PHASE-I STARTED----------------- ");
-		this.generate_n_bitString(this.getN());
+		this.setN_bitString(this.getN());
 		this.setOffset();
 		this.doCommit();
 		this.signCommit();
@@ -97,10 +100,7 @@ public class Prover extends Node implements Runnable {
 	}
 
 	public void phaseTwo(int round) {
-		int temp = this.getRightLink().getData_0();
-		temp++;
-		this.getRightLink().setData_0(temp);
-		//System.out.println(this.getName()+" increased to "+ temp);
+
 		
 		String offsetBit=this.bitAt(this.getN_bitString(), round);
 		String challengeBit=this.getRightLink().getChallenge();//how to use challenge bit
@@ -123,7 +123,6 @@ public class Prover extends Node implements Runnable {
 			Thread.sleep(1000);
 			System.out.println("delayed 1000ms by "+this.getName());
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -143,7 +142,6 @@ public class Prover extends Node implements Runnable {
 	}
 	
 	public void setSignedOpening() {
-		//this.signedOpening = this.signData(this.opening);
 		int rounds=this.getN();
 		
 		for(int i=0; i<rounds;i++ ){
@@ -154,11 +152,9 @@ public class Prover extends Node implements Runnable {
 		String temp="";
 		
 		for (String b : transcript) {
-			//System.out.print(b+" ");
 			temp=temp.concat(b);
 		}
 		
-		//System.out.println("");
 		transcriptString=temp;
 		System.out.println("Transcript string at Prover = "+transcriptString);
 		
