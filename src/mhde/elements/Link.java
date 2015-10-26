@@ -7,6 +7,8 @@ public class Link {
 	private String name;
 	private String leftNode;
 	private String rightNode;
+	private long delay;
+	private int length;
 
 	private byte[][] phase0_data = new byte[2][];// array to store path and
 													// signature
@@ -14,11 +16,13 @@ public class Link {
 	private String challenge;
 	private String response;
 
-	public Link(String name, String leftNode, String rightNode) {
+	public Link(String name, String leftNode, String rightNode, long delay, int length) {
 		this.flag = "";
 		this.name = name;
 		this.leftNode = leftNode;
 		this.rightNode = rightNode;
+		this.delay=delay;
+		this.length=length;
 	}
 
 	public String getFlag() {
@@ -39,6 +43,14 @@ public class Link {
 
 	public String getRightNode() {
 		return rightNode;
+	}
+	
+	public long getDelay(){
+		return this.delay;
+	}
+	
+	public int getLength(){
+		return this.length;
 	}
 
 	public byte[][] getPhase0_data() {

@@ -5,17 +5,19 @@ import java.security.PublicKey;
 
 public class Proxy extends Node implements Runnable {
 
+	private String name;
 	private Link l_link;
 	private Link r_link;
-	private int rounds;
-	private String name;
+	private int rounds;	
+	//private long delay;
 
 	public Proxy(String name, Link leftLink, Link rightLink, KeyPair kp, int n) {
 		super(name, leftLink, rightLink, kp, n);
+		this.name = name;
 		this.l_link = leftLink;
 		this.r_link = rightLink;
-		this.rounds = n;
-		this.name = name;
+		this.rounds = n;	
+		//this.delay=delay;
 	}
 
 	public void run() {
@@ -32,7 +34,7 @@ public class Proxy extends Node implements Runnable {
 
 	private void selectAndRun(int methodOne, int methodTwo, int r) {
 		synchronized (r_link) {
-			if (!r_link.getFlag().equals(this.getName())) {
+			if (!r_link.getFlag().equals(this.name)) {
 				try {
 					r_link.wait();
 				} catch (InterruptedException e) {
@@ -44,6 +46,7 @@ public class Proxy extends Node implements Runnable {
 					this.phaseZero();
 					break;
 				case 2:
+					this.applyDelay(r_link.getDelay());
 					this.phaseTwo_first();
 					break;
 				default:
@@ -51,9 +54,10 @@ public class Proxy extends Node implements Runnable {
 				}
 				l_link.setFlag(l_link.getLeftNode());
 				l_link.notify();
+				//this.letOther(1);
 			}
 			synchronized (l_link) {
-				if (!l_link.getFlag().equals(this.getName())) {
+				if (!l_link.getFlag().equals(this.name)) {
 					try {
 						l_link.wait();
 					} catch (InterruptedException e) {
@@ -64,6 +68,7 @@ public class Proxy extends Node implements Runnable {
 					this.phaseOne();
 					break;
 				case 3:
+					this.applyDelay(r_link.getDelay());					
 					this.phaseTwo_second(r);
 					break;
 				case 4:
@@ -108,7 +113,6 @@ public class Proxy extends Node implements Runnable {
 
 		String challenge = r_link.getChallenge();
 		l_link.setChallenge(challenge);
-		this.delay();
 	}
 
 	private void phaseTwo_second(int round) {// method-#3
@@ -117,7 +121,6 @@ public class Proxy extends Node implements Runnable {
 		String offsetBit = this.bitAt(this.getN_bitString(), round);
 		String response = this.xorBits(challenge, offsetBit);
 		r_link.setResponse(response);
-		this.delay();
 	}
 
 	private void phaseThree() {// method-#4

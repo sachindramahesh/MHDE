@@ -18,6 +18,7 @@ public class TrustedThirdParty {
 	private static HashMap<String, byte[]> signedCommits=new HashMap<String, byte[]>();
 	private static HashMap<String, byte[]> openings=new HashMap<String, byte[]>();
 	private static HashMap<String, byte[]> signedOpenings=new HashMap<String, byte[]>();
+	private static HashMap<String, long[]> timing=new HashMap<String, long[]>();
 	private static String secretK;
 
 	private TrustedThirdParty() {
@@ -126,6 +127,14 @@ public class TrustedThirdParty {
 	
 	public PrivateKey getVerifierPrivateKey(){
 		return keysSet.get("VC").getPrivate();
+	}
+
+	public static HashMap<String, long[]> getTiming() {
+		return timing;
+	}
+
+	public static void setTiming(String path, long[] time) {
+		timing.put(path, time);
 	}
 	
 

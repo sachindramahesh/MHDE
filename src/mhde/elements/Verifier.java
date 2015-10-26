@@ -8,43 +8,47 @@ import java.util.HashMap;
 
 public class Verifier extends Node implements Runnable {
 
+	private String name;
+	private Link l_link;
+	private int rounds;
 
 	private String path;
 	private String[] users;
 
 	private String[] challenge;
 	private String[] response;
-	private String[] proverResponse;
-	private String[] transcript;
-	private String transcriptString;
 	private long[] timeLapse;
 
-	private String secretKey_K;
+	private String[] proverResponse;
+	private String[] proverTranscript;
+	private String transcriptString;
 
-	private PrivateKey esk;
+	private String secretKey_K;// shared secret between prover and verifier
+	private PrivateKey esk;// verifier's private key
 	
-	private Link l_link;
-	
-	private int rounds;
+	private String pathNum;
 
 	public Verifier(String name, Link leftLink, KeyPair kp, String path, int n,
-			String k, PrivateKey esk) {
+			String k, PrivateKey esk, String pathNum) {
 		super(name, leftLink, null, kp, n);
+		this.name = name;
+		this.l_link = leftLink;
+		this.rounds = n;
 		this.path = path;
+		this.users = path.split("\\s*,\\s*");
 		this.challenge = new String[n];
 		this.response = new String[n];
+		this.timeLapse = new long[n+1];
+		timeLapse[n]=this.users.length;
 		this.proverResponse = new String[n];
-		this.timeLapse = new long[n];
-		this.transcript = new String[2 * n];
+		this.proverTranscript = new String[2 * n];
+		this.transcriptString = "";
 		this.secretKey_K = k;
 		this.esk = esk;
-		users = path.split("\\s*,\\s*");
-		this.l_link=leftLink;
-		this.rounds=n;
-		
+		this.pathNum=pathNum;
 
-		System.out.println(this.getName() + "'s n-bit secret "
-				+ this.secretKey_K);
+		System.out.println(name + "'s n-bit secret " + secretKey_K);
+
 	}
 
 	public void run() {
@@ -57,10 +61,9 @@ public class Verifier extends Node implements Runnable {
 			l_link.notify();
 		}
 
-
 		for (int i = 0; i < rounds; i++) {
 			synchronized (l_link) {
-				if (!l_link.getFlag().equals(this.getName())) {
+				if (!l_link.getFlag().equals(this.name)) {
 					try {
 						l_link.wait();
 					} catch (InterruptedException e) {
@@ -68,29 +71,26 @@ public class Verifier extends Node implements Runnable {
 				}
 				if (i == 0) {
 					this.phaseOne();
-				}
-				if (i > 0) {
-					this.response[i - 1] = this.getLeftLink().getResponse();
+				} else if (i > 0) {
 					endClock = System.nanoTime();
-
+					this.response[i - 1] = l_link.getResponse();					
 					timeLapse[i - 1] = endClock - startClock;
-					System.out.println(this.getName() + " @round=" + (i - 1)
+					System.out.println(name + " @round=" + (i - 1)
 							+ " challenge=" + challenge[i - 1] + " response="
-							+ this.response[i - 1] + " lapsed time = "
-							+ this.timeLapse[i - 1] + "ns");
+							+ response[i - 1] + " lapsed time = "
+							+ timeLapse[i - 1] + "ns");
 
 				}
 				this.phaseTwo(i);
 
-				l_link.setFlag(l_link.getLeftNode());
-				startClock = System.nanoTime();
+				l_link.setFlag(l_link.getLeftNode());				
 				l_link.notify();
+				startClock = System.nanoTime();
 			}
-
 		}
 
 		synchronized (l_link) {
-			if (!l_link.getFlag().equals(this.getName())) {
+			if (!l_link.getFlag().equals(this.name)) {
 				try {
 					l_link.wait();
 				} catch (InterruptedException e) {
@@ -99,22 +99,16 @@ public class Verifier extends Node implements Runnable {
 			this.response[rounds - 1] = l_link.getResponse();
 			endClock = System.nanoTime();
 			this.timeLapse[rounds - 1] = endClock - startClock;
-			System.out.println(this.getName() + " @round=" + (rounds - 1)
-					+ " challenge=" + challenge[rounds - 1] + " response="
-					+ this.response[rounds - 1] + " lapsed time = "
-					+ this.timeLapse[rounds - 1] + "ns");
+			System.out.println(name + " @round=" + (rounds - 1) + " challenge="
+					+ challenge[rounds - 1] + " response="
+					+ response[rounds - 1] + " lapsed time = "
+					+ timeLapse[rounds - 1] + "ns");
 
-			System.out
-					.println("---------------------PHASE-II COMPLETED----------------- ");
-
-			System.out
-					.println("---------------------PHASE-III STARTED----------------- ");
-
-			// this.phaseThreeDummy();
+			System.out.println("\t====PHASE-II COMPLETED====\n\n ");
+			System.out.println("\t====PHASE-III STARTED==== ");
 
 			l_link.setFlag(l_link.getLeftNode());
 			l_link.notify();
-
 		}
 
 		synchronized (l_link) {
@@ -124,38 +118,31 @@ public class Verifier extends Node implements Runnable {
 				} catch (InterruptedException e) {
 				}
 			}
-
 			this.phaseThree();
-
 		}
 
-		synchronized (this) {
+		synchronized (this) {// notify to proceed to next path
 			this.notify();
 		}
 
 	}
 
-	public void phaseZero() {
+	private void phaseZero() {
 
-		//Link leftLink = this.getLeftLink();
 		byte[] sign = this.signData(path.getBytes());
 		l_link.setPhase0_data(path.getBytes(), sign);
-
-		System.out
-				.println("---------------------PHASE-0 STARTED----------------- ");
+		System.out.println("\t====PHASE-0 STARTED==== ");
 
 	}
 
-	public void phaseOne() {
+	private void phaseOne() {
 
-		System.out
-				.println("---------------------PHASE-I COMPLETED----------------- ");
-		System.out
-				.println("---------------------PHASE-II STARTED----------------- ");
+		System.out.println("\t====PHASE-I COMPLETED====\n\n");
+		System.out.println("\t====PHASE-II STARTED==== ");
 
 	}
 
-	public void phaseTwo(int round) {
+	private void phaseTwo(int round) {
 
 		String challenge = RandomNumberGenerator.getInstance()
 				.nextRandomNumber(1);
@@ -165,6 +152,8 @@ public class Verifier extends Node implements Runnable {
 	}
 
 	public void phaseThree() {
+		
+		TrustedThirdParty.setTiming(pathNum, timeLapse);
 
 		int unmatchedOpeningsandSigns = this.validateOpeningAndSignatures();
 		boolean isChallengeResponsesConsistent = this
@@ -198,9 +187,10 @@ public class Verifier extends Node implements Runnable {
 	}
 
 	private int validateOpeningAndSignatures() {
-		System.out.println("->->->->->->Validating Openings and Signatures");
-		TrustedThirdParty ttp = TrustedThirdParty.getInstance();
 
+		System.out.println("\n->->->->->->Validating Openings and Signatures");
+
+		TrustedThirdParty ttp = TrustedThirdParty.getInstance();
 		HashMap<String, byte[]> openings = ttp.getOpenings();
 		HashMap<String, byte[]> signedOpenings = ttp.getSignedOpenings();
 
@@ -225,8 +215,7 @@ public class Verifier extends Node implements Runnable {
 
 			} else {
 				byte[] open = openings.get(user);
-				isOK = this.verifyData(openings.get(user),
-						signedOpenings.get(user),
+				isOK = this.verifyData(open, signedOpenings.get(user),
 						ttp.getUserPublicKey_Sign(user));
 				if (!isOK) {
 					falseCount++;
@@ -234,14 +223,10 @@ public class Verifier extends Node implements Runnable {
 				System.out.println("Node=" + user + ", Opening= "
 						+ new String(open) + ", is opening signature valid = "
 						+ isOK);
-
 			}
 		}
 
 		System.out.println("False count=" + falseCount);
-
-		System.out
-				.println("->->->->->->Validating Openings and Signatures DONE!!!");
 
 		return falseCount;
 
@@ -272,9 +257,11 @@ public class Verifier extends Node implements Runnable {
 	}
 
 	private int validateCommitmentAndSignatures() {
-		System.out.println("->->->->->->Validating Commitments and Signatures");
-		TrustedThirdParty ttp = TrustedThirdParty.getInstance();
 
+		System.out
+				.println("\n->->->->->->Validating Commitments and Signatures");
+
+		TrustedThirdParty ttp = TrustedThirdParty.getInstance();
 		HashMap<String, byte[]> commits = ttp.getCommits();
 		HashMap<String, byte[]> signedCommits = ttp.getSignedCommits();
 
@@ -283,7 +270,6 @@ public class Verifier extends Node implements Runnable {
 
 		for (int i = 0; i < users.length - 1; i++) {
 			String user = users[i];
-
 			isOK = this.verifyData(commits.get(user), signedCommits.get(user),
 					ttp.getUserPublicKey_Sign(user));
 			if (!isOK) {
@@ -291,20 +277,19 @@ public class Verifier extends Node implements Runnable {
 			}
 			System.out.println("Node=" + user
 					+ ", is commitment signature valid = " + isOK);
-
 		}
 
 		System.out.println("False count=" + falseCount);
-		System.out
-				.println("->->->->->->Validating Commitment and Signatures DONE!!!");
+
 		return falseCount;
 
 	}
 
 	private int validateOpeningsAndCommitments() {
-		System.out.println("->->->->->->Validating Openings and Commitments");
-		TrustedThirdParty ttp = TrustedThirdParty.getInstance();
 
+		System.out.println("\n->->->->->->Validating Openings and Commitments");
+
+		TrustedThirdParty ttp = TrustedThirdParty.getInstance();
 		HashMap<String, byte[]> openings = ttp.getOpenings();
 		HashMap<String, byte[]> commits = ttp.getCommits();
 
@@ -314,7 +299,6 @@ public class Verifier extends Node implements Runnable {
 		for (int i = 0; i < users.length - 1; i++) {
 			String user = users[i];
 			if (user.equals("U")) {
-
 				byte[] open = this.decryptData(openings.get(user), esk);
 				isOK = this.checkCommit(open, commits.get(user));
 				if (!isOK) {
@@ -323,7 +307,6 @@ public class Verifier extends Node implements Runnable {
 				System.out
 						.println("Node=U does opening and commitment match? = "
 								+ isOK);
-
 			} else {
 
 				isOK = this.checkCommit(openings.get(user), commits.get(user));
@@ -336,13 +319,12 @@ public class Verifier extends Node implements Runnable {
 		}
 
 		System.out.println("False count=" + falseCount);
-		System.out
-				.println("->->->->->->Validating Openings and Commitments DONE!!!");
+
 		return falseCount;
 
 	}
 
-	public boolean checkCommit(byte[] opening, byte[] commit) {
+	private boolean checkCommit(byte[] opening, byte[] commit) {
 		boolean isOK = false;
 		try {
 			MessageDigest sha = MessageDigest.getInstance("SHA-1");
@@ -354,7 +336,6 @@ public class Verifier extends Node implements Runnable {
 				}
 			}
 			isOK = true;
-
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
@@ -367,8 +348,6 @@ public class Verifier extends Node implements Runnable {
 		for (int i = 1; i < offsets.length; i++) {
 			offsets[i] = new String(openings.get(users[i]));
 		}
-
-		int rounds = this.getN();
 
 		String xor = "";
 		String pReponse = "";
@@ -390,13 +369,13 @@ public class Verifier extends Node implements Runnable {
 	private void constructTranscript() {
 
 		for (int i = 0; i < rounds; i++) {
-			transcript[2 * i] = challenge[i];
-			transcript[(2 * i) + 1] = proverResponse[i];
+			proverTranscript[2 * i] = challenge[i];
+			proverTranscript[(2 * i) + 1] = proverResponse[i];
 		}
 
 		String temp = "";
 
-		for (String b : transcript) {
+		for (String b : proverTranscript) {
 			temp = temp.concat(b);
 		}
 
