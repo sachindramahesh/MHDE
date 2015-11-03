@@ -192,7 +192,7 @@ public abstract class Node implements Runnable {
 	public void applyDelay(long delay){
 		try {
 			Thread.sleep(delay);
-			System.out.println("delayed "+ delay +"ms by " + this.getName());
+			//System.out.println("delayed "+ delay +"ms by " + this.getName());
 
 		} catch (InterruptedException e) {
 			e.printStackTrace();

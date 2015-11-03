@@ -171,20 +171,28 @@ public class SimulatorOne {
 					e.printStackTrace();
 				}
 			}
-		}
-
-		HashMap<String, long[]> times = TrustedThirdParty.getTiming();
-		for (int i = 1; i <= numOfPaths; i++) {
-			long[] t = times.get("path_" + i);
-			if (t != null) {
-				for (long l : t) {
-					System.out.print(l + " ");
-				}
-				System.out.println("");
+			try {
+				Thread.sleep(2000);
+				System.out.println("\n\n");
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
+
+//		HashMap<String, long[]> times = TrustedThirdParty.getTiming();
+//		for (int i = 1; i <= numOfPaths; i++) {
+//			long[] t = times.get("path_" + i);
+//			if (t != null) {
+//				for (long l : t) {
+//					System.out.print(l + " ");
+//				}
+//				System.out.println("");
+//			}
+//		}
 		
 		VerifierProxy vp=new VerifierProxy(numOfPaths, tDelta);
+		vp.decideAuthentication();
 		vp.estimateDistance();
 
 	}

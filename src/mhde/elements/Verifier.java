@@ -39,7 +39,7 @@ public class Verifier extends Node implements Runnable {
 		this.challenge = new String[n];
 		this.response = new String[n];
 		this.timeLapse = new long[n+1];
-		timeLapse[n]=this.users.length;
+		timeLapse[n]=this.users.length;//length of the path
 		this.proverResponse = new String[n];
 		this.proverTranscript = new String[2 * n];
 		this.transcriptString = "";
@@ -164,7 +164,8 @@ public class Verifier extends Node implements Runnable {
 		if (unmatchedOpeningsandSigns == 0 && isChallengeResponsesConsistent
 				&& unmatchedCommitmentsandSigns == 0
 				&& unmatchedOpeningsandCommits == 0) {
-			System.out.println("!!!!!Everything is OK!!!!!");
+			TrustedThirdParty.updateAuthentication(new Boolean(true));
+			System.out.println("AUTHENTICATION BIT = 1");
 		} else {
 			if (unmatchedOpeningsandSigns > 0) {
 				System.out.println("There are " + unmatchedOpeningsandSigns
@@ -182,6 +183,8 @@ public class Verifier extends Node implements Runnable {
 				System.out
 						.println("There are inconsistent challenges and responses");
 			}
+			TrustedThirdParty.updateAuthentication(new Boolean(false));
+			System.out.println("AUTHENTICATION BIT = 0");
 		}
 
 	}
@@ -210,8 +213,8 @@ public class Verifier extends Node implements Runnable {
 				if (!isOK) {
 					falseCount++;
 				}
-				System.out.println("Node=U, Opening= " + new String(open)
-						+ ", is opening signature valid = " + isOK);
+//				System.out.println("Node=U, Opening= " + new String(open)
+//						+ ", is opening signature valid = " + isOK);
 
 			} else {
 				byte[] open = openings.get(user);
@@ -220,9 +223,9 @@ public class Verifier extends Node implements Runnable {
 				if (!isOK) {
 					falseCount++;
 				}
-				System.out.println("Node=" + user + ", Opening= "
-						+ new String(open) + ", is opening signature valid = "
-						+ isOK);
+//				System.out.println("Node=" + user + ", Opening= "
+//						+ new String(open) + ", is opening signature valid = "
+//						+ isOK);
 			}
 		}
 
@@ -250,7 +253,7 @@ public class Verifier extends Node implements Runnable {
 		String open = new String(this.decryptData(openings.get("U"), esk));
 
 		boolean isOK = open.equals(proverOffset);
-		System.out.println("is prover offset valid?= " + isOK);
+		//System.out.println("is prover offset valid?= " + isOK);
 
 		return isOK;
 
@@ -275,8 +278,8 @@ public class Verifier extends Node implements Runnable {
 			if (!isOK) {
 				falseCount++;
 			}
-			System.out.println("Node=" + user
-					+ ", is commitment signature valid = " + isOK);
+//			System.out.println("Node=" + user
+//					+ ", is commitment signature valid = " + isOK);
 		}
 
 		System.out.println("False count=" + falseCount);
@@ -304,17 +307,17 @@ public class Verifier extends Node implements Runnable {
 				if (!isOK) {
 					falseCount++;
 				}
-				System.out
-						.println("Node=U does opening and commitment match? = "
-								+ isOK);
+//				System.out
+//						.println("Node=U does opening and commitment match? = "
+//								+ isOK);
 			} else {
 
 				isOK = this.checkCommit(openings.get(user), commits.get(user));
 				if (!isOK) {
 					falseCount++;
 				}
-				System.out.println("Node=" + user
-						+ " does opening and commitment match? = " + isOK);
+//				System.out.println("Node=" + user
+//						+ " does opening and commitment match? = " + isOK);
 			}
 		}
 
@@ -380,8 +383,8 @@ public class Verifier extends Node implements Runnable {
 		}
 
 		transcriptString = temp;
-		System.out
-				.println("Transcript string at verifier= " + transcriptString);
+//		System.out
+//				.println("Transcript string at verifier= " + transcriptString);
 
 	}
 

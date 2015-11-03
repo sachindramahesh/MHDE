@@ -55,6 +55,7 @@ public class Proxy extends Node implements Runnable {
 				l_link.setFlag(l_link.getLeftNode());
 				l_link.notify();
 				//this.letOther(1);
+				//Thread.yield();
 			}
 			synchronized (l_link) {
 				if (!l_link.getFlag().equals(this.name)) {

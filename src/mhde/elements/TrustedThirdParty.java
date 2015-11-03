@@ -8,6 +8,7 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class TrustedThirdParty {
 
@@ -19,6 +20,7 @@ public class TrustedThirdParty {
 	private static HashMap<String, byte[]> openings=new HashMap<String, byte[]>();
 	private static HashMap<String, byte[]> signedOpenings=new HashMap<String, byte[]>();
 	private static HashMap<String, long[]> timing=new HashMap<String, long[]>();
+	private static LinkedList<Boolean> auth=new LinkedList<Boolean>();
 	private static String secretK;
 
 	private TrustedThirdParty() {
@@ -135,6 +137,14 @@ public class TrustedThirdParty {
 
 	public static void setTiming(String path, long[] time) {
 		timing.put(path, time);
+	}
+	
+	public static LinkedList<Boolean> getAuth() {
+		//auth.add(new Boolean(false));
+		return auth;
+	}
+	public static void  updateAuthentication(Boolean bool) {
+		auth.add(bool);
 	}
 	
 

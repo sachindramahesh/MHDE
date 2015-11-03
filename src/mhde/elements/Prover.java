@@ -150,7 +150,7 @@ public class Prover extends Node implements Runnable {
 			tString= tString.concat(b);
 		}
 	
-		System.out.println("Transcript string at Prover = " + tString);
+		//System.out.println("Transcript string at Prover = " + tString);
 
 		byte[] openingBytes = this.getOpening();
 		byte[] transcriptBytes = tString.getBytes();

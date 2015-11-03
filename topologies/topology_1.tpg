@@ -1,15 +1,16 @@
 num_of_paths=3
 num_of_nodes=11
 n_value=4
-t_delta=500000000
+t_delta=100000000
+
 
 path_1=U, p11, p12, p13, V
 path_2=U, p21, p22, p23, p24, V
 path_3=U, p31, p32, V
 
-delay_1=5000, 500, 500, 500
-delay_2=500, 500, 500, 500, 500
-delay_3=500, 500, 500
+delay_1=100, 100, 100, 100
+delay_2=100, 100, 100, 100, 100
+delay_3=100, 100, 100
 
 length_1=10, 10, 10, 10
 length_2=10, 10, 10, 10, 10
