@@ -29,6 +29,7 @@ public class SimulatorOne {
 	private static HashMap<String, String> pathList = new HashMap<String, String>();
 	private static HashMap<String, String> delayList = new HashMap<String, String>();
 	private static HashMap<String, String> lengthList = new HashMap<String, String>();
+	private static HashMap<String, String> malicious=new HashMap<String, String>();
 	private static HashMap<String, KeyPair> keysList;
 
 	private Verifier curVerifier;
@@ -62,6 +63,8 @@ public class SimulatorOne {
 				pathList.put("path_" + i, prop.getProperty("path_" + i));
 				delayList.put("delay_" + i, prop.getProperty("delay_" + i));
 				lengthList.put("length_" + i, prop.getProperty("length_" + i));
+				malicious.put("mal_"+i, prop.getProperty("mal_"+i));
+				
 			}
 
 			for (int i = 1; i <= numOfPaths; i++) {
@@ -98,11 +101,16 @@ public class SimulatorOne {
 		String stringLength = lengthList.get("length_" + pathNumber);
 		String[] len = stringLength.split("\\s*,\\s*");
 		int[] length = new int[len.length];
+		
+		String malLength=malicious.get("mal_"+pathNumber);
+		String[] malUsers=malLength.split("\\s*,\\s*");
+		boolean[] mal=new boolean[malUsers.length];
 
 		for (int i = 0; i < linkNames.length; i++) {
 			linkNames[i] = "link" + i;
 			delay[i] = Integer.parseInt(del[i]);
 			length[i] = Integer.parseInt(len[i]);
+			mal[i]=Boolean.parseBoolean(malUsers[i]);
 		}
 
 		System.out.println("============" + pathNumber + "=" + path
@@ -125,7 +133,7 @@ public class SimulatorOne {
 			if (i == 0) {// prover->1
 				nodesList.add(i,
 						new Prover("U", linksList.get(i), keysList.get("U"), n,
-								secret_K));
+								secret_K,mal[i]));
 			} else if (i == (nodes.length - 1)) {// verifier->0
 				nodesList.add(i,
 						curVerifier = new Verifier("V", linksList.get(i - 1),
@@ -135,7 +143,7 @@ public class SimulatorOne {
 				nodesList.add(i,
 						new Proxy(nodes[i].trim(), linksList.get(i - 1),
 								linksList.get(i),
-								keysList.get(nodes[i].trim()), n));
+								keysList.get(nodes[i].trim()), n, mal[i]));
 			}
 		}
 

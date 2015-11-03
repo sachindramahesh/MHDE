@@ -16,3 +16,7 @@ length_1=10, 10, 10, 10
 length_2=10, 10, 10, 10, 10
 length_3=10, 10, 10
 
+mal_1= false, false, false, false
+mal_2= false, false, false, false, false
+mal_3= false, false, false
+

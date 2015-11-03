@@ -208,5 +208,12 @@ public abstract class Node implements Runnable {
 			e.printStackTrace();
 		}
 	}
+	
+	public String invertBit(String bit){
+		if(bit.equals("0"))
+			return "1";
+		else
+			return "0";
+	}
 
 }

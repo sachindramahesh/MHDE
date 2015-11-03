@@ -47,7 +47,7 @@ public class Verifier extends Node implements Runnable {
 		this.esk = esk;
 		this.pathNum=pathNum;
 
-		System.out.println(name + "'s n-bit secret " + secretKey_K);
+		//System.out.println(name + "'s n-bit secret " + secretKey_K);
 
 	}
 

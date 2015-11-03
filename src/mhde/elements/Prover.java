@@ -15,9 +15,11 @@ public class Prover extends Node implements Runnable {
 	private String[] response;
 	private String[] transcript;
 	
+	private boolean isMalicious;
+	
 	//private long delay;
 
-	public Prover(String name, Link rightLink, KeyPair kp, int n, String k) {
+	public Prover(String name, Link rightLink, KeyPair kp, int n, String k, boolean mal) {
 		super(name, null, rightLink, kp, n);
 		this.name = name;
 		this.r_Link = rightLink;
@@ -26,9 +28,11 @@ public class Prover extends Node implements Runnable {
 		this.challenge = new String[n];
 		this.response = new String[n];
 		this.transcript = new String[2 * n];
+		this.isMalicious=mal;
 		//this.delay=delay;
 
-		System.out.println(name + "'s n-bit secret " + this.secretKey_K);
+		//System.out.println(name + "'s n-bit secret " + this.secretKey_K);
+		//System.out.println(name+": mal "+this.isMalicious);
 
 	}
 
@@ -113,8 +117,11 @@ public class Prover extends Node implements Runnable {
 			String secretKeyBit = this.bitAt(secretKey_K, round);
 			resp = this.xorBits(offsetBit, secretKeyBit);
 		}
+		
+		if(isMalicious)
+			resp=invertBit(resp);
 
-		this.response[round] = resp;
+		this.response[round] = resp;		
 		r_Link.setResponse(resp);
 
 		

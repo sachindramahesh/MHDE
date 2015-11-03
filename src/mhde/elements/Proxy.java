@@ -10,14 +10,18 @@ public class Proxy extends Node implements Runnable {
 	private Link r_link;
 	private int rounds;	
 	//private long delay;
+	
+	private boolean isMalicious;
 
-	public Proxy(String name, Link leftLink, Link rightLink, KeyPair kp, int n) {
+	public Proxy(String name, Link leftLink, Link rightLink, KeyPair kp, int n, boolean mal) {
 		super(name, leftLink, rightLink, kp, n);
 		this.name = name;
 		this.l_link = leftLink;
 		this.r_link = rightLink;
 		this.rounds = n;	
 		//this.delay=delay;
+		this.isMalicious=mal;
+		//System.out.println(name+": mal "+this.isMalicious);
 	}
 
 	public void run() {
@@ -119,6 +123,8 @@ public class Proxy extends Node implements Runnable {
 	private void phaseTwo_second(int round) {// method-#3
 
 		String challenge = l_link.getResponse();
+		if(isMalicious)
+			challenge=invertBit(challenge);
 		String offsetBit = this.bitAt(this.getN_bitString(), round);
 		String response = this.xorBits(challenge, offsetBit);
 		r_link.setResponse(response);
