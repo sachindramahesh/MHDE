@@ -1,0 +1,36 @@
+num_of_paths=5
+num_of_nodes=135
+//num of nodes are not used
+n_value=128
+t_delta=33
+//in nano-seconds
+
+
+path_1=U, p1_1, p1_2, p1_3, p1_4, p1_5, p1_6, p1_7, p1_8, p1_9, p1_10, p1_11, p1_12, p1_13, p1_14, p1_15, p1_16, p1_17, V
+path_2=U, p2_1, p2_2, p2_3, p2_4, p2_5, p2_6, p2_7, p2_8, p2_9, p2_10, V
+path_3=U, p3_1, p3_2, p3_3, p3_4, p3_5, p3_6, p3_7, p3_8, p3_9, p3_10, p3_11, p3_12, V
+path_4=U, p4_1, p4_2, p4_3, p4_4, p4_5, p4_6, p4_7, p4_8, p4_9, p4_10, p4_11, V
+path_5=U, p5_1, p5_2, p5_3, p5_4, p5_5, p5_6, p5_7, p5_8, p5_9, p5_10, p5_11, p5_12, p5_13, V
+
+
+
+
+
+delay_1=15, 15, 15, 10, 20, 25, 25, 25, 25, 25, 25, 20, 20, 10, 15, 15, 15, 10
+delay_2=30, 32, 32, 30, 32, 32, 30, 32, 32, 32, 26
+delay_3=25, 27, 20, 30, 25, 26, 24, 32, 26, 30, 32, 31, 32
+delay_4=30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 33
+delay_5=23, 32, 31, 29, 30, 25, 27, 21, 19, 25, 26, 24, 26, 32
+
+
+
+
+
+mal_1= false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
+mal_2= false, false, false, false, false, false, false, false, false, false, false, false
+mal_3= false, false, false, false, false, false, false, false, false, false, false, false, false, false
+mal_4= false, false, false, false, false, false, false, false, false, false, false, false, false
+mal_5= false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
+
+
+

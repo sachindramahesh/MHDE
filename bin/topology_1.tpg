@@ -1,0 +1,51 @@
+num_of_paths=1
+num_of_nodes=135
+//num of nodes are not used
+n_value=256
+t_delta=33
+//in nano-seconds
+
+path_1=U, p1_1, p1_2, p1_3, p1_4, p1_5, p1_6, p1_7, p1_8, p1_9,  V
+path_2=U, p2_1, p2_2, p2_3, p2_4, p2_5, p2_6, p2_7, p2_8, p2_9, p2_10, V
+path_3=U, p3_1, p3_2, p3_3, p3_4, p3_5, p3_6, p3_7, p3_8, p3_9, p3_10, p3_11, V
+path_4=U, p4_1, p4_2, p4_3, p4_4, p4_5, p4_6, p4_7, p4_8, p4_9, p4_10, p4_11, p4_12, V
+path_5=U, p5_1, p5_2, p5_3, p5_4, p5_5, p5_6, p5_7, p5_8, p5_9, p5_10, p5_11, p5_12, p5_13, V
+path_6=U, p6_1, p6_2, p6_3, p6_4, p6_5, p6_6, p6_7, p6_8, p6_9, p6_10, p6_11, p6_12, p6_13, p6_14, V
+path_7=U, p7_1, p7_2, p7_3, p7_4, p7_5, p7_6, p7_7, p7_8, p7_9, p7_10, p7_11, p7_12, p7_13, p7_14, p7_15, V
+path_8=U, p8_1, p8_2, p8_3, p8_4, p8_5, p8_6, p8_7, p8_8, p8_9, p8_10, p8_11, p8_12, p8_13, p8_14, p8_15, p8_16, V
+path_9=U, p9_1, p9_2, p9_3, p9_4, p9_5, p9_6, p9_7, p9_8, p9_9, p9_10, p9_11, p9_12, p9_13, p9_14, p9_15, p9_16, p9_17, V
+path_10=U, p10_1, p10_2, p10_3, p10_4, p10_5, p10_6, p10_7, p10_8, p10_9, p10_10, p10_11, p10_12, p10_13, p10_14, p10_15, p10_16, p10_17, p10_18, V
+path_11=U, p11_1, p11_2, p11_3, p11_4, p11_5, p11_6, p11_7, p11_8, p11_9, p11_10, p11_11, p11_12, p11_13, p11_14, p11_15, p11_16, p11_17, p11_18, p11_19, V
+path_12=U, p12_1, p12_2, p12_3, p12_4, p12_5, p12_6, p12_7, p12_8, p12_9, p12_10, p12_11, p12_12, p12_13, p12_14, p12_15, p12_16, p12_17, p12_18, p12_19, p12_20, V
+path_13=U, p13_1, p13_2, p13_3, p13_4, p13_5, p13_6, p13_7, p13_8, p13_9, p13_10, p13_11, p13_12, p13_13, p13_14, p13_15, p13_16, p13_17, p13_18, p13_19, p13_20, p13_21, V
+
+delay_1=33, 33, 33, 33, 33, 33, 33, 33, 33, 33
+delay_2=30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30
+delay_3=30, 30, 30, 30, 30, 25, 25, 25, 25, 25, 25, 30
+delay_4=30, 30, 30, 30, 20, 25, 25, 25, 25, 25, 25, 20, 20
+delay_5=30, 30, 30, 20, 20, 25, 25, 25, 25, 25, 25, 20, 20, 10
+delay_6=30, 30, 15, 20, 20, 25, 25, 25, 25, 25, 25, 20, 20, 10, 15
+delay_7=30, 15, 15, 20, 20, 25, 25, 25, 25, 25, 25, 20, 20, 10, 15, 15
+delay_8=15, 15, 15, 20, 20, 25, 25, 25, 25, 25, 25, 20, 20, 10, 15, 15, 15
+delay_9=15, 15, 15, 10, 20, 25, 25, 25, 25, 25, 25, 20, 20, 10, 15, 15, 15, 10
+delay_10=10, 10, 15, 10, 20, 25, 25, 25, 25, 25, 25, 20, 20, 10, 15, 15, 15, 10, 10
+delay_11=10, 10, 15, 10, 20, 20, 20, 25, 25, 25, 25, 20, 20, 10, 15, 15, 15, 10, 10 ,10
+delay_12=5,10, 10, 15, 10, 20, 20, 20, 20, 25, 25, 25, 20, 20, 10, 15, 15, 15, 10, 10 ,10
+delay_13=5,10, 10, 15, 10, 20, 13, 13, 14, 20, 25, 25, 25, 20, 20, 10, 15, 15, 15, 10, 10 ,10
+
+
+
+mal_1= false, false, false, false, false, false, false, false, false, false, false
+mal_2= false, false, false, false, false, false, false, false, false, false, false, false
+mal_3= false, false, false, false, false, false, false, false, false, false, false, false, false
+mal_4= false, false, false, false, false, false, false, false, false, false, false, false, false, false
+mal_5= false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
+mal_6= false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
+mal_7= false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
+mal_8= false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
+mal_9= false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
+mal_10= false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
+mal_11= false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
+mal_12= false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
+mal_13= false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
+
