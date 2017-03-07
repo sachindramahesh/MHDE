@@ -40,7 +40,7 @@ public class MHDESignature {
 		return doesVerify;
 	}
 
-	public static KeyPair generateRSAKeyPair(int keySize, SecureRandom random) {
+	public static KeyPair generateDSAKeyPair(int keySize) {
 		KeyPairGenerator signatureKeyGen = null;
 		KeyPair signaturePair = null;
 
@@ -54,17 +54,5 @@ public class MHDESignature {
 
 		return signaturePair;
 	}
-
-	// public static void main(String[] args) {
-	// String plainText= MHDERandomNumberGenerator.getNextRandomNumber(128);
-	//
-	// KeyPair skp=generateRSAKeyPair(2048, new SecureRandom());
-	// PublicKey spk=skp.getPublic();//key for verification
-	// PrivateKey ssk=skp.getPrivate();//key for signing
-	//
-	// byte[] signedData=signWithDSA(plainText.getBytes(), ssk);
-	// boolean doesVerify=verifyWithDSA(plainText.getBytes(), signedData, spk);
-	// System.out.println("does verify the signature :"+doesVerify);
-	// }
 
 }

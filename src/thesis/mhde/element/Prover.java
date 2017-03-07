@@ -17,7 +17,6 @@ public class Prover extends ProverOrProxy {
 		this.challenge = new String[n];
 		this.response = new String[n];
 		this.secretKey_K = sk_K;
-
 	}
 
 	@Override
@@ -127,13 +126,13 @@ public class Prover extends ProverOrProxy {
 
 	@Override
 	public void sendOpeningAndSignature() {
-		TrustedThirdParty ttp = TrustedThirdParty.getInstance();
+		VerifierProxy vProxy=VerifierProxy.getInstance();
 		
 		PublicKey epk = TrustedThirdParty.getVerifierPublicKey_Encrypt();		
 		byte[] encryptedR = MHDECipher.encryptWithRSA(this.getR(), epk);
 		byte[] encryptedOffset = MHDECipher.encryptWithRSA(this.getOffsetInBytes(), epk);
 		this.setOpening(encryptedR, encryptedOffset);
-		ttp.updateOpenings(this.getNodeName(), this.getOpening());
+		vProxy.updateOpenings(this.getNodeName(), this.getOpening());
 
 		
 		byte[] transcriptBytes = this.computeTranscript();
@@ -142,7 +141,7 @@ public class Prover extends ProverOrProxy {
 		byte[] signedConcatR = MHDESignature.signWithDSA(concat_R_Transcript, this.getSignSK());
 		byte[] signedConcatOffset = MHDESignature.signWithDSA(concat_Offset_Transcript, this.getSignSK());
 		this.setSignedOpening(signedConcatR, signedConcatOffset);
-		ttp.updateSignedOpenings(this.getNodeName(), this.getSignedOpening());
+		vProxy.updateSignedOpenings(this.getNodeName(), this.getSignedOpening());
 	}
 	
 	

@@ -55,30 +55,5 @@ public class MHDERandomNumberGenerator extends SecureRandom {
 
 		return binaryString;
 	}
-
-	// public static void main(String[] args) {
-	// System.out.println("get a random bit :"+getARandomBit());
-	// System.out.println("get a random bit :"+getARandomBit());
-	// System.out.println("get a random bit :"+getARandomBit());
-	// System.out.println("get a random bit :"+getARandomBit());
-	// System.out.println("get a random bit :"+getARandomBit());
-	//
-	// System.out.println("\n\n");
-	// String random=getNextRandomNumber(16);
-	// System.out.println("get a 16-bit random number
-	// :length="+random.length()+" number="+random);
-	// random=getNextRandomNumber(32);
-	// System.out.println("get a 32-bit random number
-	// :length="+random.length()+" number="+random);
-	// random=getNextRandomNumber(64);
-	// System.out.println("get a 64-bit random number
-	// :length="+random.length()+" number="+random);
-	// random=getNextRandomNumber(128);
-	// System.out.println("get a 128-bit random number
-	// :length="+random.length()+" number="+random);
-	// random=getNextRandomNumber(256);
-	// System.out.println("get a 256-bit random number
-	// :length="+random.length()+" number="+random);
-	// }
-
+	
 }

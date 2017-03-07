@@ -74,9 +74,9 @@ public abstract class ProverOrProxy extends BasicNode {
 	}
 
 	public void sendCommitAndSignature() {
-		TrustedThirdParty ttp = TrustedThirdParty.getInstance();
-		ttp.updateCommits(this.getNodeName(), this.commitment);
-		ttp.updateSignedCommits(this.getNodeName(), this.signedCommitment);
+		VerifierProxy vProxy = VerifierProxy.getInstance();
+		vProxy.updateCommits(this.getNodeName(), this.commitment);
+		vProxy.updateSignedCommits(this.getNodeName(), this.signedCommitment);
 	}
 
 	public void setOpening() {
@@ -106,9 +106,9 @@ public abstract class ProverOrProxy extends BasicNode {
 	}
 
 	public void sendOpeningAndSignature() {
-		TrustedThirdParty ttp = TrustedThirdParty.getInstance();
-		ttp.updateOpenings(this.getNodeName(), this.r_and_offset);
-		ttp.updateSignedOpenings(this.getNodeName(), this.r_and_offset_signed);
+		VerifierProxy vProxy=VerifierProxy.getInstance();
+		vProxy.updateOpenings(this.getNodeName(), this.r_and_offset);
+		vProxy.updateSignedOpenings(this.getNodeName(), this.r_and_offset_signed);
 	}
 
 	public void applyDelay(int delay) {

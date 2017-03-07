@@ -21,26 +21,5 @@ public class MHDEXor {
 		
 		return concatenation;		
 	}
-	// public static void main(String[] args) {
-	// String bitSequence = "1101001";
-	// System.out.println("bit sequence: " + bitSequence);
-	// System.out.println("bit at 0: " + bitAt(bitSequence, 0));// ->1
-	// System.out.println("bit at 1: " + bitAt(bitSequence, 1));// ->1
-	// System.out.println("bit at 2: " + bitAt(bitSequence, 2));// ->0
-	// System.out.println("bit at 3: " + bitAt(bitSequence, 3));// ->1
-	// System.out.println("bit at 4: " + bitAt(bitSequence, 4));// ->0
-	// System.out.println("bit at 5: " + bitAt(bitSequence, 5));// ->0
-	// System.out.println("bit at 6: " + bitAt(bitSequence, 6));// ->1
-	//
-	// System.out.println("\n\n");
-	// System.out.println("0 xor 0: " + xorBits("0", "0"));// ->0
-	// // System.out.println("0
-	// // xor 1:
-	// // "+xorBits("0",
-	// // "1"));//->1
-	// System.out.println("1 xor 0: " + xorBits("1", "0"));// ->1
-	// System.out.println("1 xor 1: " + xorBits("1", "1"));// ->0
-	//
-	// }
 
 }

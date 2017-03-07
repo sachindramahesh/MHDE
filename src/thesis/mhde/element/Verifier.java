@@ -23,7 +23,7 @@ public class Verifier extends BasicNode {
 	private long[] timeLapse;
 	private String proverResponses;
 
-	public Verifier(String nodeName, Link leftLink, int n, String path, KeyPair signKP, PrivateKey esk, String sk_k,
+	public Verifier(String nodeName, Link leftLink, int n, String path, KeyPair signKP, KeyPair cipherkP, String sk_k,
 			String pathNum) {
 		super(nodeName, leftLink, null, n);
 		this.verifyingPath = path;
@@ -31,10 +31,11 @@ public class Verifier extends BasicNode {
 		this.signSK = signKP.getPrivate();
 		this.challenge = new String[n];
 		this.response = new String[n];
-		this.encryptSK = esk;
+		this.encryptSK = cipherkP.getPrivate();
 		this.secretKey_K = sk_k;
 		this.pathNum = pathNum;
 		this.timeLapse = new long[n + 1];
+		this.timeLapse[n]=users.length-1;
 		this.proverResponses = null;
 	}
 
@@ -99,7 +100,7 @@ public class Verifier extends BasicNode {
 				} catch (InterruptedException e) {
 				}
 			}
-			TrustedThirdParty.setTiming(pathNum, timeLapse);
+			VerifierProxy.setTiming(pathNum, timeLapse);
 			this.phaseThree();
 		}
 
@@ -137,7 +138,7 @@ public class Verifier extends BasicNode {
 		boolean isProverHonest = this.validateProver();
 
 		if (numOfMaliciousProxies == 0 && doResponsesMatchChallenges && isProverHonest) {
-			TrustedThirdParty.updateAuthentication(new Boolean(true));
+			VerifierProxy.updateAuthentication(new Boolean(true));
 			System.out.println("AUTHENTICATION BIT = 1");
 		} else {
 			if (numOfMaliciousProxies > 0) {
@@ -150,17 +151,18 @@ public class Verifier extends BasicNode {
 				System.out.println("The prover is malicious");
 			}
 
-			TrustedThirdParty.updateAuthentication(new Boolean(false));
+			VerifierProxy.updateAuthentication(new Boolean(false));
 			System.out.println("AUTHENTICATION BIT = 0");
 		}
 	}
 
 	private int validateProxies() {
 		TrustedThirdParty ttp = TrustedThirdParty.getInstance();
-		HashMap<String, byte[]> commits = ttp.getCommits();
-		HashMap<String, byte[]> signedCommits = ttp.getSignedCommits();
-		HashMap<String, byte[][]> openings = ttp.getOpenings();
-		HashMap<String, byte[][]> signedOpenings = ttp.getSignedOpenings();
+		VerifierProxy vProxy=VerifierProxy.getInstance();
+		HashMap<String, byte[]> commits = vProxy.getCommits();
+		HashMap<String, byte[]> signedCommits = vProxy.getSignedCommits();
+		HashMap<String, byte[][]> openings = vProxy.getOpenings();
+		HashMap<String, byte[][]> signedOpenings = vProxy.getSignedOpenings();
 
 		boolean verify_commit_sign = false;
 		boolean verify_r_sign = false;
@@ -218,8 +220,9 @@ public class Verifier extends BasicNode {
 		}
 		proverOffset = proverOffset.trim();
 
-		TrustedThirdParty ttp = TrustedThirdParty.getInstance();
-		HashMap<String, byte[][]> openings = ttp.getOpenings();
+		//TrustedThirdParty ttp = TrustedThirdParty.getInstance();
+		VerifierProxy vProxy=VerifierProxy.getInstance();
+		HashMap<String, byte[][]> openings = vProxy.getOpenings();
 		String pOffset = new String(MHDECipher.decryptWithRSA(openings.get("U")[1], this.encryptSK));
 
 		boolean isOK = pOffset.equals(proverOffset);
@@ -229,7 +232,7 @@ public class Verifier extends BasicNode {
 	}
 
 	private String computeProverResponses() {
-		HashMap<String, byte[][]> openings = TrustedThirdParty.getInstance().getOpenings();
+		HashMap<String, byte[][]> openings = VerifierProxy.getInstance().getOpenings();
 
 		String[] proxyOffsets = new String[users.length - 2];
 		for (int i = 0; i < proxyOffsets.length; i++) {
@@ -253,17 +256,18 @@ public class Verifier extends BasicNode {
 
 	private boolean validateProver() {
 		TrustedThirdParty ttp = TrustedThirdParty.getInstance();
+		VerifierProxy vProxy=VerifierProxy.getInstance();
 		PublicKey signPK = ttp.getUserPublicKey_Sign("U");
 		String transcript = this.computeTranscript();
 
-		byte[] commit = ttp.getCommits().get("U");
-		byte[] signedCommit = ttp.getSignedCommits().get("U");
-		byte[] encryptedR = ttp.getOpenings().get("U")[0];
-		byte[] signedEncryptedR = ttp.getSignedOpenings().get("U")[0];
+		byte[] commit = vProxy.getCommits().get("U");
+		byte[] signedCommit = vProxy.getSignedCommits().get("U");
+		byte[] encryptedR = vProxy.getOpenings().get("U")[0];
+		byte[] signedEncryptedR = vProxy.getSignedOpenings().get("U")[0];
 		byte[] decryptedR = MHDECipher.decryptWithRSA(encryptedR, encryptSK);
 		byte[] concatenated_enR_tCript = MHDEXor.concat(encryptedR, transcript.getBytes());
-		byte[] encryptedOffset = ttp.getOpenings().get("U")[1];
-		byte[] signedEncryptedOffset = ttp.getSignedOpenings().get("U")[1];
+		byte[] encryptedOffset = vProxy.getOpenings().get("U")[1];
+		byte[] signedEncryptedOffset = vProxy.getSignedOpenings().get("U")[1];
 		byte[] decryptedOffset = MHDECipher.decryptWithRSA(encryptedOffset, encryptSK);
 		byte[] concatenated_enOff_tCript = MHDEXor.concat(encryptedOffset, transcript.getBytes());
 

@@ -59,27 +59,4 @@ public class MHDECipher {
 		return Arrays.equals(plainText, decipherText);		
 	}
 	
-	// public static void main(String[] args) {
-	// String plainText_1 = MHDERandomNumberGenerator.getNextRandomNumber(64);
-	// System.out.println("plain text_1: " + plainText_1);
-	//
-	// KeyPair kp_1 = generateRSAKeyPair(2048);
-	// PublicKey epk_1 = kp_1.getPublic();
-	// PrivateKey esk_1 = kp_1.getPrivate();
-	//
-	// byte[] cipherText_1 = encryptWithRSA(plainText_1.getBytes(), epk_1);
-	// byte[] decipherText_1 = decryptWithRSA(cipherText_1, esk_1);
-	//
-	// String getPlain = new String(decipherText_1);
-	// System.out.println("decip text_1: " + getPlain);
-	// System.out.println("Does plain text match decipher text: " +
-	// plainText_1.equals(new String(decipherText_1)));
-	//
-	//
-	// System.out.println("Does plain text match decipher text: "
-	// + doesDecipherTextMatchPlainText(plainText_1.getBytes(),
-	// decipherText_1));
-	//
-	// }
-
 }

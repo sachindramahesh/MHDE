@@ -1,7 +1,7 @@
-num_of_paths=1
+num_of_paths=2
 num_of_nodes=135
 //num of nodes are not used
-n_value=256
+n_value=16
 t_delta=33
 //in nano-seconds
 

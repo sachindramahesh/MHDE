@@ -23,12 +23,11 @@ public class SimulatorOne {
 	private static HashMap<String, String> delayList = new HashMap<String, String>();
 	private static HashMap<String, String> lengthList = new HashMap<String, String>();
 	private static HashMap<String, String> malicious = new HashMap<String, String>();
-	private static HashMap<String, KeyPair> keysList;
 
 	private Verifier curVerifier;
 
 	private static String secret_K;
-	private static PrivateKey esk;
+	
 
 	private SimulatorOne() {
 	}
@@ -116,13 +115,13 @@ public class SimulatorOne {
 
 		for (int i = 0; i < nodes.length; i++) {
 			if (i == 0) {// prover->1
-				nodesList.add(i, new Prover("U", linksList.get(i), n, keysList.get("U"), secret_K));
+				nodesList.add(i, new Prover("U", linksList.get(i), n, TrustedThirdParty.getSignKP("U"), secret_K));
 			} else if (i == (nodes.length - 1)) {// verifier->0
-				nodesList.add(i, curVerifier = new Verifier("V", linksList.get(i - 1), n, path, keysList.get("V"), esk,
+				nodesList.add(i, curVerifier = new Verifier("V", linksList.get(i - 1), n, path, TrustedThirdParty.getSignKP("V"), TrustedThirdParty.getCipherKP("VC"),
 						secret_K, "path_" + pathNumber));
 			} else {// ->proxies->(2-num of nodes)
 				nodesList.add(i, new Proxy(nodes[i].trim(), linksList.get(i - 1), linksList.get(i), n,
-						keysList.get(nodes[i].trim())));
+						TrustedThirdParty.getSignKP(nodes[i].trim())));
 
 			}
 		}
@@ -179,7 +178,9 @@ public class SimulatorOne {
 		// }
 		// }
 
-		VerifierProxy vp = new VerifierProxy(numOfPaths, tDelta);
+		VerifierProxy vp = VerifierProxy.getInstance();
+		vp.setNumOfPaths(numOfPaths);
+		vp.setTDelta(tDelta);
 		vp.decideAuthentication();
 		vp.estimateDistance();
 
@@ -192,9 +193,9 @@ public class SimulatorOne {
 		SimulatorOne so = SimulatorOne.getInstance();
 		boolean result = so.readTopology(topologyFile);
 		TrustedThirdParty ttp = TrustedThirdParty.getInstance();
-		keysList = ttp.registerUsers(numOfPaths, pathList, n);
+		ttp.registerUsers(numOfPaths, pathList, n);
 		secret_K = ttp.getSecretK();
-		esk = ttp.getVerifierPrivateKey();
+		
 		if (result) {
 			so.simulateNetwork();
 		}
