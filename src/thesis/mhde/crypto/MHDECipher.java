@@ -1,3 +1,10 @@
+/**
+ * MHDECipher.java - A class to do RSA encryption/ decryption operations and RSA key pair generations. 
+ * This class uses already available java cryptography library methods to do RSA cipher operations
+ * 
+ * @author Mahesh S. Perera
+ */
+
 package thesis.mhde.crypto;
 
 import java.security.KeyPair;
@@ -10,6 +17,16 @@ import java.util.Arrays;
 import javax.crypto.Cipher;
 
 public class MHDECipher {
+
+	/**
+	 * Performs the RSA encryption operation
+	 * 
+	 * @param plainText
+	 *            the plain text to be encrypted
+	 * @param epk
+	 *            RSA public key used to encrypt data
+	 * @return the cipher text
+	 */
 
 	public static byte[] encryptWithRSA(byte[] plainText, PublicKey epk) {
 		byte[] cipherText = null;
@@ -25,6 +42,16 @@ public class MHDECipher {
 		return cipherText;
 	}
 
+	/**
+	 * Performs the RSA decryption operation
+	 * 
+	 * @param cipherText
+	 *            the cipher text to be decrypted
+	 * @param esk
+	 *            RSA private key used to decrypt data
+	 * @return the plain text
+	 */
+
 	public static byte[] decryptWithRSA(byte[] cipherText, PrivateKey esk) {
 		byte[] plainText = null;
 
@@ -38,25 +65,41 @@ public class MHDECipher {
 
 		return plainText;
 	}
-	
-	public static KeyPair generateRSAKeyPair(int keySize){
-		KeyPairGenerator cipherKeyGen=null;
-		KeyPair cipherPair=null;
+
+	/**
+	 * Generate a Public/Private key pair of given bit size
+	 * 
+	 * @param keySize
+	 *            size of the required RSA key in bits
+	 * @return a RSA key pair
+	 */
+
+	public static KeyPair generateRSAKeyPair(int keySize) {
+		KeyPairGenerator cipherKeyGen = null;
+		KeyPair cipherPair = null;
 		try {
 			cipherKeyGen = KeyPairGenerator.getInstance("RSA");
-			cipherKeyGen.initialize(keySize, SecureRandom.getInstance("SHA1PRNG", "SUN"));		
-			cipherPair=cipherKeyGen.generateKeyPair();
+			cipherKeyGen.initialize(keySize, SecureRandom.getInstance("SHA1PRNG", "SUN"));
+			cipherPair = cipherKeyGen.generateKeyPair();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		return cipherPair; 		
+
+		return cipherPair;
 	}
-	
-	
-	public static boolean doesDecipherTextMatchPlainText(byte[] plainText, byte[] decipherText){
-		
-		return Arrays.equals(plainText, decipherText);		
+
+	/**
+	 * Compare a given plain text against it decrypted value of cipher text
+	 * 
+	 * @param plainText
+	 *            the plain text
+	 * @param decipherText
+	 *            the decrypted cipher text
+	 * @return true if two text match, return false otherwise
+	 */
+	public static boolean doesDecipherTextMatchPlainText(byte[] plainText, byte[] decipherText) {
+
+		return Arrays.equals(plainText, decipherText);
 	}
-	
+
 }

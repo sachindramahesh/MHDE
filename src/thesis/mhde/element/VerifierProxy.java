@@ -207,31 +207,6 @@ public class VerifierProxy {
 
 	}
 
-	private void estimateModeDistance(long[] avgTimes) {
-
-		int maxCount = 0;
-		long modeValue = 0;
-
-		for (int i = 0; i < avgTimes.length; ++i) {
-			int count = 0;
-			for (int j = 0; j < avgTimes.length; ++j) {
-				if (avgTimes[j] == avgTimes[i])
-					++count;
-			}
-			if (count > maxCount) {
-				maxCount = count;
-				modeValue = avgTimes[i];
-			}
-		}
-
-		System.out.println("mode average time " + modeValue + " ns");
-		double modeSeconds = modeValue / 1000000000.0;
-		// System.out.println("minimum average time " + minSeconds + " s");
-		double estimatedModeDistance = (modeSeconds / 2) * C;
-
-		System.out.printf("Estimated mode distance: %f m \n", estimatedModeDistance);
-
-	}
 
 	private void prunePaths() {
 

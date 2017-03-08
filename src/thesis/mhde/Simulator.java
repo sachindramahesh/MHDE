@@ -1,4 +1,4 @@
-package thesis.mhde.simulation;
+package thesis.mhde;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,9 +12,9 @@ import java.util.Properties;
 
 import thesis.mhde.element.*;
 
-public class SimulatorOne {
+public class Simulator {
 
-	private static SimulatorOne instance = new SimulatorOne();
+	private static Simulator instance = new Simulator();
 
 	private static int numOfPaths = 0;
 	private static double tDelta = 0.0;
@@ -26,13 +26,12 @@ public class SimulatorOne {
 
 	private Verifier curVerifier;
 
-	private static String secret_K;
 	
 
-	private SimulatorOne() {
+	private Simulator() {
 	}
 
-	public static SimulatorOne getInstance() {
+	public static Simulator getInstance() {
 		return instance;
 	}
 
@@ -115,10 +114,10 @@ public class SimulatorOne {
 
 		for (int i = 0; i < nodes.length; i++) {
 			if (i == 0) {// prover->1
-				nodesList.add(i, new Prover("U", linksList.get(i), n, TrustedThirdParty.getSignKP("U"), secret_K));
+				nodesList.add(i, new Prover("U", linksList.get(i), n, TrustedThirdParty.getSignKP("U"), TrustedThirdParty.getSecretK()));
 			} else if (i == (nodes.length - 1)) {// verifier->0
 				nodesList.add(i, curVerifier = new Verifier("V", linksList.get(i - 1), n, path, TrustedThirdParty.getSignKP("V"), TrustedThirdParty.getCipherKP("VC"),
-						secret_K, "path_" + pathNumber));
+						TrustedThirdParty.getSecretK(), "path_" + pathNumber));
 			} else {// ->proxies->(2-num of nodes)
 				nodesList.add(i, new Proxy(nodes[i].trim(), linksList.get(i - 1), linksList.get(i), n,
 						TrustedThirdParty.getSignKP(nodes[i].trim())));
@@ -126,20 +125,6 @@ public class SimulatorOne {
 			}
 		}
 
-		// for (int i = 0; i < nodesList.size(); i++) {
-		// if (i > 0 && i < nodesList.size() - 1) {
-		// System.out.println(nodes[i] + ": left link= "
-		// + nodesList.get(i).getLeftLink().getName()
-		// + " right link= "
-		// + nodesList.get(i).getRightLink().getName());
-		// } else if (i == 0) {
-		// System.out.println(nodes[i] + ": right link= "
-		// + nodesList.get(i).getRightLink().getName());
-		// } else {
-		// System.out.println(nodes[i] + ": left link= "
-		// + nodesList.get(i).getLeftLink().getName());
-		// }
-		// }
 
 		for (int i = 0; i < nodesList.size(); i++) {
 			new Thread(nodesList.get(i)).start();
@@ -167,16 +152,6 @@ public class SimulatorOne {
 			}
 		}
 
-		// HashMap<String, long[]> times = TrustedThirdParty.getTiming();
-		// for (int i = 1; i <= numOfPaths; i++) {
-		// long[] t = times.get("path_" + i);
-		// if (t != null) {
-		// for (long l : t) {
-		// System.out.print(l + " ");
-		// }
-		// System.out.println("");
-		// }
-		// }
 
 		VerifierProxy vp = VerifierProxy.getInstance();
 		vp.setNumOfPaths(numOfPaths);
@@ -190,11 +165,9 @@ public class SimulatorOne {
 
 		String topologyFile = "topologies/topology_1.tpg";
 
-		SimulatorOne so = SimulatorOne.getInstance();
+		Simulator so = Simulator.getInstance();
 		boolean result = so.readTopology(topologyFile);
-		TrustedThirdParty ttp = TrustedThirdParty.getInstance();
-		ttp.registerUsers(numOfPaths, pathList, n);
-		secret_K = ttp.getSecretK();
+		TrustedThirdParty.registerUsers(numOfPaths, pathList, n);
 		
 		if (result) {
 			so.simulateNetwork();
