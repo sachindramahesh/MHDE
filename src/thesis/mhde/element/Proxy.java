@@ -1,5 +1,10 @@
-
-
+/**
+ * Proxy.java - The concrete class that extends the ProverOrProxy abstract class. Used to
+ * create intermediate proxy objects. Overrides the run() method from Runnable interface to enable
+ * an object of this class to run in its own thread.
+ *  
+ * @author Mahesh S. Perera
+ */
 
 package thesis.mhde.element;
 
@@ -8,13 +13,14 @@ import java.security.PublicKey;
 import thesis.mhde.crypto.MHDESignature;
 import thesis.mhde.crypto.MHDEXor;
 
-public class Proxy extends ProverOrProxy{
+public class Proxy extends ProverOrProxy {
 
 	public Proxy(String nodeName, Link leftLink, Link rightLink, int n, KeyPair signKP) {
 		super(nodeName, leftLink, rightLink, n, signKP);
 	}
 
 	@Override
+	/*Overrided run method*/
 	public void run() {
 
 		this.selectAndRun(0, 1, -1);
@@ -27,6 +33,7 @@ public class Proxy extends ProverOrProxy{
 
 	}
 
+	/*helper method to select and run the correct phase of the protocol*/
 	private void selectAndRun(int methodOne, int methodTwo, int r) {
 		Link r_link = this.getRightLink();
 		Link l_link = this.getLeftLink();
@@ -80,19 +87,26 @@ public class Proxy extends ProverOrProxy{
 
 	}
 
+	/*
+	 * Executes the phase-0 of the MHDE protocol. Verifies the path signed by
+	 * the verifier
+	 */
 	private void phaseZero() {// method-#0
 
 		byte[][] data = this.getRightLink().getPhase0_data();
 		byte[] path = data[0];
 		byte[] sign = data[1];
 		PublicKey pk = TrustedThirdParty.getVerifierPublicKey_Sign();
-
 		boolean verifies = MHDESignature.verifyWithDSA(path, sign, pk);
 		System.out.println(this.getNodeName() + " " + verifies);
+		
 		this.getLeftLink().setPhase0_data(path, sign);
-
 	}
 
+	/*
+	 * Executes the phase-1 of the MHDE protocol. Selects a random n-bit offset,
+	 * commit it, sign it and send the commitment and signature to the verifier
+	 */
 	private void phaseOne() {// method-#1
 
 		this.setOffset();
@@ -101,9 +115,13 @@ public class Proxy extends ProverOrProxy{
 		this.sendCommitAndSignature();
 
 		System.out.println(this.getNodeName() + "'s offset " + this.getOffset());
-
 	}
 
+	/*
+	 * Executes the first part of the phase-2 of the MHDE protocol. Relay the
+	 * verifier's challenge to the next node in the path towards the prover's
+	 * side
+	 */
 	private void phaseTwo_first() {// method-#2
 		Link r_link = this.getRightLink();
 		Link l_link = this.getLeftLink();
@@ -112,6 +130,12 @@ public class Proxy extends ProverOrProxy{
 		l_link.setTimer(r_link.getTimer() + l_link.getDelay());
 	}
 
+	/*
+	 * Executes the second part of the phase-3 of the MHDE protocol. Xor this
+	 * user's offset-bit corresponding to the given round with the bit got from
+	 * the previous user and send the result to next user towards the verifier's
+	 * side
+	 */
 	private void phaseTwo_second(int round) {// method-#3
 		Link r_link = this.getRightLink();
 		Link l_link = this.getLeftLink();
@@ -122,6 +146,10 @@ public class Proxy extends ProverOrProxy{
 		r_link.setTimer(l_link.getTimer() + r_link.getDelay());
 	}
 
+	/*
+	 * Executes the phase-3 of the MHDE protocol. Set the opening, sign it and
+	 * send both the opening and the signature to the verifier
+	 */
 	private void phaseThree() {// method-#4
 		this.setOpening();
 		this.setSignedOpening();

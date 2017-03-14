@@ -1,3 +1,8 @@
+/**
+ * TrustedThirdParty.java - A class that implements the behaviour of the Trusted-Third-Party as required by the MHDE protocol. 
+ * This class uses the singleton design pattern.
+ */
+
 package thesis.mhde.element;
 
 import java.security.KeyPair;
@@ -13,7 +18,8 @@ public class TrustedThirdParty {
 	private static HashMap<String, KeyPair> keysSet = new HashMap<String, KeyPair>();// keys
 																						// for
 																						// signing
-	private static String secretK;
+	private static String secretK;// the secret key K shared by the prover and
+									// verifier
 
 	private TrustedThirdParty() {
 	}
@@ -24,6 +30,19 @@ public class TrustedThirdParty {
 		return ttp;
 	}
 
+	/**
+	 * Generates all the keys required by each user to participate in the MHDE
+	 * protocol. The keys include: the secret n-bit key K shared by the prover
+	 * and the verifier, the verifiers cipher keys, the signing keys for all the
+	 * users
+	 * 
+	 * @param numOfPaths
+	 *            total number of paths that participate in the MHDE protocol
+	 * @param pathList
+	 *            listing of all the paths
+	 * @param n
+	 *            size of n
+	 */
 	public static void registerUsers(int numOfPaths, HashMap<String, String> pathList, int n) {
 		setSecretK(n);
 
@@ -56,30 +75,74 @@ public class TrustedThirdParty {
 		}
 	}
 
+	/**
+	 * Returns the signing key pair of the specified user
+	 * 
+	 * @param uname
+	 *            name of the node
+	 * @return the signing key pair
+	 */
 	public static KeyPair getSignKP(String uname) {
 		return keysSet.get(uname);
 	}
 
+	/**
+	 * Returns the cipher key pair of the specified user
+	 * 
+	 * @param uname
+	 *            name of the node
+	 * @return the cipher key pair
+	 */
 	public static KeyPair getCipherKP(String uname) {
 		return keysSet.get(uname);
 	}
 
+	/**
+	 * Generate the secret key K shared between the prover and the verifier
+	 * 
+	 * @param keySize
+	 *            size of the key
+	 */
 	private static void setSecretK(int keySize) {
 		secretK = MHDERandomNumberGenerator.getNextRandomNumber(keySize);
 	}
 
+	/**
+	 * Returns the secret key K shared between the prover and the verifier
+	 * 
+	 * @return the secret key K
+	 */
 	public static String getSecretK() {
 		return secretK;
 	}
 
+	/**
+	 * Returns the verifiers' public sign key used to verify the verifier's
+	 * signature
+	 * 
+	 * @return verifier's public sign key
+	 */
 	public static PublicKey getVerifierPublicKey_Sign() {
 		return keysSet.get("V").getPublic();
 	}
 
+	/**
+	 * Returns the verifier's public encryption key used to encrypt data
+	 * intended for the verifier
+	 * 
+	 * @return verifier's public encryption key
+	 */
 	public static PublicKey getVerifierPublicKey_Encrypt() {
 		return keysSet.get("VC").getPublic();
 	}
 
+	/**
+	 * Returns the specified user's public sign key
+	 * 
+	 * @param username
+	 *            name of the user node
+	 * @return public sign key
+	 */
 	public PublicKey getUserPublicKey_Sign(String username) {
 		return keysSet.get(username).getPublic();
 	}

@@ -1,3 +1,10 @@
+/**
+ * Verifier.java - The Verifier class that extends the BasicNode abstract class. Implement the functionalities specific to the verifier
+ *  
+ * 
+ * @author Mahesh S. Perera
+ */
+
 package thesis.mhde.element;
 
 import java.security.KeyPair;
@@ -12,16 +19,18 @@ import thesis.mhde.crypto.MHDEXor;
 
 public class Verifier extends BasicNode {
 
-	private String verifyingPath;
-	private PrivateKey signSK;
-	private PrivateKey encryptSK;
-	private String[] challenge;
-	private String[] response;
-	private String[] users;
-	private String secretKey_K;
-	private String pathNum;
-	private long[] timeLapse;
-	private String proverResponses;
+	private String verifyingPath;// a single path the MHDE protocol is run on
+	private PrivateKey signSK;// private DSA sign key
+	private PrivateKey encryptSK;// private RSA encryption key
+	private String[] challenge;// challenges generated
+	private String[] response;// responses received
+	private String[] users;// users in the single path
+	private String secretKey_K;// secret n-bit key K shared between prover and
+								// verifier
+	private String pathNum;// number of the single path
+	private long[] timeLapse;// time taken to run each challenge-response round
+	private String proverResponses;// prover responses deduced by the verifier
+									// based on its information
 
 	public Verifier(String nodeName, Link leftLink, int n, String path, KeyPair signKP, KeyPair cipherkP, String sk_k,
 			String pathNum) {
@@ -35,7 +44,7 @@ public class Verifier extends BasicNode {
 		this.secretKey_K = sk_k;
 		this.pathNum = pathNum;
 		this.timeLapse = new long[n + 1];
-		this.timeLapse[n]=users.length-1;
+		this.timeLapse[n] = users.length - 1;
 		this.proverResponses = null;
 	}
 
@@ -109,6 +118,7 @@ public class Verifier extends BasicNode {
 		}
 	}
 
+	/* Executes the phase-0 of the protocol */
 	private void phaseZero() {
 
 		byte[] sign = MHDESignature.signWithDSA(this.verifyingPath.getBytes(), this.signSK);
@@ -117,13 +127,20 @@ public class Verifier extends BasicNode {
 
 	}
 
+	/*
+	 * Executes the phase-1 of the protocol. Verifier actually does nothing at
+	 * this phase
+	 */
 	private void phaseOne() {
-
 		System.out.println("\t====PHASE-I COMPLETED====\n\n");
 		System.out.println("\t====PHASE-II STARTED==== ");
 
 	}
 
+	/*
+	 * Executes the phase-2 of the MHDE protocol. Generates a random 1-bit
+	 * string and send it to the next proxy on the path
+	 */
 	private void phaseTwo(int round) {
 		Link l_link = this.getLeftLink();
 		String challenge = MHDERandomNumberGenerator.getARandomBit();
@@ -132,6 +149,7 @@ public class Verifier extends BasicNode {
 		l_link.setTimer(l_link.getDelay());
 	}
 
+	/* Executes the phase-3 of the MHDE protocol. Does verification process */
 	private void phaseThree() {
 		int numOfMaliciousProxies = this.validateProxies();
 		boolean doResponsesMatchChallenges = this.validateProverResponses();
@@ -156,9 +174,10 @@ public class Verifier extends BasicNode {
 		}
 	}
 
+	/* Helper method to validate the proxies */
 	private int validateProxies() {
 		TrustedThirdParty ttp = TrustedThirdParty.getInstance();
-		VerifierProxy vProxy=VerifierProxy.getInstance();
+		VerifierProxy vProxy = VerifierProxy.getInstance();
 		HashMap<String, byte[]> commits = vProxy.getCommits();
 		HashMap<String, byte[]> signedCommits = vProxy.getSignedCommits();
 		HashMap<String, byte[][]> openings = vProxy.getOpenings();
@@ -203,7 +222,8 @@ public class Verifier extends BasicNode {
 		return maliciousProxies;
 	}
 
-	public boolean validateProverResponses() {
+	/* Helper method to validate the prover responses. */
+	private boolean validateProverResponses() {
 		String proverOffset = "";
 		String proverResponseBit = null;
 		String secretKeyBit = null;
@@ -220,8 +240,8 @@ public class Verifier extends BasicNode {
 		}
 		proverOffset = proverOffset.trim();
 
-		//TrustedThirdParty ttp = TrustedThirdParty.getInstance();
-		VerifierProxy vProxy=VerifierProxy.getInstance();
+		// TrustedThirdParty ttp = TrustedThirdParty.getInstance();
+		VerifierProxy vProxy = VerifierProxy.getInstance();
 		HashMap<String, byte[][]> openings = vProxy.getOpenings();
 		String pOffset = new String(MHDECipher.decryptWithRSA(openings.get("U")[1], this.encryptSK));
 
@@ -231,6 +251,7 @@ public class Verifier extends BasicNode {
 		return isOK;
 	}
 
+	/* Helper method to compute prover responses */
 	private String computeProverResponses() {
 		HashMap<String, byte[][]> openings = VerifierProxy.getInstance().getOpenings();
 
@@ -254,9 +275,10 @@ public class Verifier extends BasicNode {
 		return proverResponses.trim();
 	}
 
+	/* helper method to validate the prover */
 	private boolean validateProver() {
 		TrustedThirdParty ttp = TrustedThirdParty.getInstance();
-		VerifierProxy vProxy=VerifierProxy.getInstance();
+		VerifierProxy vProxy = VerifierProxy.getInstance();
 		PublicKey signPK = ttp.getUserPublicKey_Sign("U");
 		String transcript = this.computeTranscript();
 
@@ -300,6 +322,7 @@ public class Verifier extends BasicNode {
 		return isProverHonest;
 	}
 
+	/*Helper method to compute the transcript*/
 	private String computeTranscript() {
 		String tString = "";
 		for (int i = 0; i < this.getN(); i++) {

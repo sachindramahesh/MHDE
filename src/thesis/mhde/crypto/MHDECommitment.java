@@ -14,10 +14,10 @@ import java.util.Properties;
 import java.util.Random;
 
 public class MHDECommitment {
-	public static BigInteger p;
-	public static BigInteger q;
-	public static BigInteger g;
-	public static BigInteger h;
+	public static BigInteger p;// a large prime
+	public static BigInteger q;// a large prime such that q|(p-1)
+	public static BigInteger g;// a generator of the order-q
+	public static BigInteger h;//g^a mod p
 
 	/*
 	 * This static block initializes the p,q,g and h public parameters as
