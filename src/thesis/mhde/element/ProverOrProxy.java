@@ -209,9 +209,9 @@ public abstract class ProverOrProxy extends BasicNode {
 	 * @param delay
 	 *            milliseconds to sleep this method
 	 */
-	public void applyDelay(int delay) {
+	public void applyDelay(double delay) {
 		try {
-			Thread.sleep(0, delay);
+			Thread.sleep(0, (int)delay);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

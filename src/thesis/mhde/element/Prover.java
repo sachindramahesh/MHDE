@@ -101,7 +101,7 @@ public class Prover extends ProverOrProxy {
 		this.signCommitment();
 		this.sendCommitAndSignature();
 
-		System.out.println(this.getNodeName() + "'s offset " + this.getOffset());
+		//System.out.println(this.getNodeName() + "'s offset " + this.getOffset());
 
 	}
 

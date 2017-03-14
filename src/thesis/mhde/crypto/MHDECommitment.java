@@ -28,7 +28,7 @@ public class MHDECommitment {
 		Properties prop = new Properties();
 		InputStream inputStream;
 		try {
-			inputStream = new FileInputStream("PQG\\pqgTriple");
+			inputStream = new FileInputStream("inputs\\pqgTriple");
 			prop.load(inputStream);
 			p = new BigInteger(prop.getProperty("p"));
 			q = new BigInteger(prop.getProperty("q"));

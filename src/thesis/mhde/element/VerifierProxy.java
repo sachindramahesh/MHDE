@@ -21,7 +21,7 @@ public class VerifierProxy {
 	// authentication for each path
 	private static LinkedList<Boolean> auth = new LinkedList<Boolean>();
 	// time taken by each path for challenge-respose rounds
-	private static HashMap<String, long[]> timing = new HashMap<String, long[]>();
+	private static HashMap<String, double[]> timing = new HashMap<String, double[]>();
 	// stores the commit values sent by users
 	private static HashMap<String, byte[]> commits = new HashMap<String, byte[]>();
 	// stores the signatures of commits sent by the users
@@ -130,7 +130,7 @@ public class VerifierProxy {
 	 * 
 	 * @return timing values
 	 */
-	public static HashMap<String, long[]> getTiming() {
+	public static HashMap<String, double[]> getTiming() {
 		return timing;
 	}
 
@@ -142,7 +142,7 @@ public class VerifierProxy {
 	 * @param time
 	 *            time taken to complete the challenge-response rounds
 	 */
-	public static void setTiming(String path, long[] time) {
+	public static void setTiming(String path, double[] time) {
 		timing.put(path, time);
 	}
 
@@ -201,7 +201,7 @@ public class VerifierProxy {
 	 */
 	public void estimateDistance() {
 		this.prunePaths();
-		long[] averageTimes = this.calculateAverages();
+		double[] averageTimes = this.calculateAverages();
 		if (averageTimes.length == 0) {
 			System.out.println("All the paths are pruned. None left");
 		} else {
@@ -216,9 +216,9 @@ public class VerifierProxy {
 	/*
 	 * Calculate the median distance between the Prover and the Verifier
 	 */
-	private void estimateMinDistance(long[] avgTimes) {
+	private void estimateMinDistance(double[] avgTimes) {
 
-		long min = avgTimes[0];
+		double min = avgTimes[0];
 		for (int i = 1; i < avgTimes.length; i++) {
 			if (min > avgTimes[i])
 				min = avgTimes[i];
@@ -233,9 +233,9 @@ public class VerifierProxy {
 	/*
 	 * Calculate the maximum distance between the Prover and the Verifier
 	 */
-	private void estimateMaxDistance(long[] avgTimes) {
+	private void estimateMaxDistance(double[] avgTimes) {
 
-		long max = avgTimes[0];
+		double max = avgTimes[0];
 		for (int i = 1; i < avgTimes.length; i++) {
 			if (max < avgTimes[i])
 				max = avgTimes[i];
@@ -250,17 +250,19 @@ public class VerifierProxy {
 	/*
 	 * Calculate the average distance between the Prover and the Verifier
 	 */
-	private void estimateAvgDistance(long[] avgTimes) {
+	private void estimateAvgDistance(double[] avgTimes) {
 
-		long total = avgTimes[0];
+		double total = avgTimes[0];
 		for (int i = 1; i < avgTimes.length; i++) {
 			total = total + avgTimes[i];
 		}
 
 		double avgTime = total / avgTimes.length;
+		avgTime=Math.round(avgTime*100.0)/100.0;
 		System.out.print("Average=> Average_time: " + avgTime + " ns,");
 		double avgSeconds = avgTime / 1000000000.0;
 		double estimatedAvgDistance = (avgSeconds / 2) * C;
+		
 
 		System.out.printf("Estimated_distance: %f m \n", estimatedAvgDistance);
 	}
@@ -268,11 +270,11 @@ public class VerifierProxy {
 	/*
 	 * Calculate the median distance between the Prover and the Verifier
 	 */
-	private void estimateMedianDistance(long[] avgTimes) {
+	private void estimateMedianDistance(double[] avgTimes) {
 
 		Arrays.sort(avgTimes);
 		int middle = avgTimes.length / 2;
-		long median = 0;
+		double median = 0;
 		if (avgTimes.length % 2 == 1) {
 			median = avgTimes[middle];
 		} else {
@@ -293,11 +295,16 @@ public class VerifierProxy {
 		int pathsRemoved = 0;
 
 		for (int i = 1; i <= numOfPaths; i++) {
-			long[] t = timing.get("path_" + i);
+			double[] t = timing.get("path_" + i);
 			int lengthJ = (int) t[t.length - 1];// last element has got the
 												// length of the path
+			//System.out.println();
+			//System.out.println("lengthJ"+lengthJ);
 			boolean removePath = false;
 			for (int j = 0; j < t.length - 1; j++) {// tDelta is in nano seconds
+				//System.out.println("t[j]"+t[j]);
+				//System.out.println(t[j] < tDelta * lengthJ);
+				//System.out.println(t[j] > 2 * tDelta * lengthJ);
 				if (t[j] < tDelta * lengthJ || t[j] > 2 * tDelta * lengthJ) {
 					removePath = true;
 					pathsRemoved++;
@@ -317,16 +324,16 @@ public class VerifierProxy {
 	/*
 	 * Calculate the average time for each pruned path
 	 */
-	private long[] calculateAverages() {
-		long[] avgTimes = new long[prunedPaths.size()];
+	private double[] calculateAverages() {
+		double[] avgTimes = new double[prunedPaths.size()];
 
 		for (int i = 0; i < avgTimes.length; i++) {
-			long[] t = timing.get(prunedPaths.get(i));
-			long temp = 0;
+			double[] t = timing.get(prunedPaths.get(i));
+			double temp = 0;
 			for (int j = 0; j < t.length - 1; j++) {
 				temp = temp + t[j];
 			}
-			avgTimes[i] = temp / (t.length - 1);
+			avgTimes[i] = Math.round((temp / (t.length - 1))*100.0)/100.0;
 
 			System.out.println("Average time " + prunedPaths.get(i) + " " + avgTimes[i] + " ns");
 		}

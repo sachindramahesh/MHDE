@@ -19,13 +19,14 @@ public class Simulator {
 	private static int n;
 	private static HashMap<String, String> pathList = new HashMap<String, String>();
 	private static HashMap<String, String> delayList = new HashMap<String, String>();
-	private static HashMap<String, String> lengthList = new HashMap<String, String>();
+	//private static HashMap<String, String> lengthList = new HashMap<String, String>();
 	private static HashMap<String, String> malicious = new HashMap<String, String>();
 
 	private Verifier curVerifier;
 
 	
 
+	//Singleton-design pattern for Simulator instance
 	private Simulator() {
 	}
 
@@ -33,28 +34,24 @@ public class Simulator {
 		return instance;
 	}
 
+	//Read the topology file(converted into propagation delay times) for the network
 	public boolean readTopology(String topologyFile) {
-
 		Properties prop = new Properties();
 		InputStream inputStream;
-
 		try {
 			inputStream = new FileInputStream(topologyFile);
 			prop.load(inputStream);
 			numOfPaths = Integer.parseInt(prop.getProperty("num_of_paths"));
 			n = Integer.parseInt(prop.getProperty("n_value"));
 			tDelta = Double.parseDouble(prop.getProperty("t_delta"));
-
 			System.out.println("n value= " + n);
-
 			for (int i = 1; i <= numOfPaths; i++) {
 				pathList.put("path_" + i, prop.getProperty("path_" + i));
 				delayList.put("delay_" + i, prop.getProperty("delay_" + i));
-				lengthList.put("length_" + i, prop.getProperty("length_" + i));
+				//lengthList.put("length_" + i, prop.getProperty("length_" + i));
 				malicious.put("mal_" + i, prop.getProperty("mal_" + i));
 
 			}
-
 			for (int i = 1; i <= numOfPaths; i++) {
 				System.out.println("path_" + i + "= " + pathList.get("path_" + i));
 
@@ -70,9 +67,11 @@ public class Simulator {
 		}
 
 		return true;
-
 	}
 
+	/*
+	 * Simulate the MHDE protocol for the single path specified by the parameter 'pathNumber'
+	 */
 	public void simulatePath(int pathNumber) {
 
 		String path = pathList.get("path_" + pathNumber);
@@ -81,7 +80,7 @@ public class Simulator {
 
 		String stringDelays = delayList.get("delay_" + pathNumber);
 		String[] del = stringDelays.split("\\s*,\\s*");
-		int[] delay = new int[del.length];
+		double[] delay = new double[del.length];
 
 		String malLength = malicious.get("mal_" + pathNumber);
 		String[] malUsers = malLength.split("\\s*,\\s*");
@@ -90,7 +89,7 @@ public class Simulator {
 		for (int i = 0; i < linkNames.length; i++) {
 			linkNames[i] = "link" + i;
 
-			delay[i] = Integer.parseInt(del[i]);
+			delay[i] = Double.parseDouble(del[i]);
 
 			mal[i] = Boolean.parseBoolean(malUsers[i]);
 		}
@@ -119,19 +118,18 @@ public class Simulator {
 			} else {// ->proxies->(2-num of nodes)
 				nodesList.add(i, new Proxy(nodes[i].trim(), linksList.get(i - 1), linksList.get(i), n,
 						TrustedThirdParty.getSignKP(nodes[i].trim())));
-
 			}
 		}
-
 
 		for (int i = 0; i < nodesList.size(); i++) {
 			new Thread(nodesList.get(i)).start();
 		}
-
 	}
 
+	/*
+	 * Simulate the MHDE protocol for the whole network.
+	 */
 	public void simulateNetwork() {
-
 		for (int i = 1; i <= numOfPaths; i++) {
 			this.simulatePath(i);
 			synchronized (curVerifier) {
@@ -145,32 +143,34 @@ public class Simulator {
 				Thread.sleep(2000);
 				System.out.println("\n\n");
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-
 
 		VerifierProxy vp = VerifierProxy.getInstance();
 		vp.setNumOfPaths(numOfPaths);
 		vp.setTDelta(tDelta);
 		vp.decideAuthentication();
 		vp.estimateDistance();
-
 	}
 
+	/*
+	 * main() method that runs the simulation programme
+	 */
 	public static void main(String[] args) throws InterruptedException {
 
-		String topologyFile = "topologies/topology_2.tpg";
+		String topologyFile = "inputs/topologyin.tpg";
+		ConvertFile cf=new ConvertFile();
+		cf.readTopology(topologyFile);
+		cf.createTopologyFile("inputs/topologyout.tpg");
 
 		Simulator so = Simulator.getInstance();
-		boolean result = so.readTopology(topologyFile);
-		TrustedThirdParty.registerUsers(numOfPaths, pathList, n);
+		boolean result = so.readTopology("inputs/topologyout.tpg");	
 		
 		if (result) {
+			TrustedThirdParty.registerUsers(numOfPaths, pathList, n);
 			so.simulateNetwork();
 		}
-
 	}
 
 }

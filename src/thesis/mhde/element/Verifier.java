@@ -28,7 +28,7 @@ public class Verifier extends BasicNode {
 	private String secretKey_K;// secret n-bit key K shared between prover and
 								// verifier
 	private String pathNum;// number of the single path
-	private long[] timeLapse;// time taken to run each challenge-response round
+	private double[] timeLapse;// time taken to run each challenge-response round
 	private String proverResponses;// prover responses deduced by the verifier
 									// based on its information
 
@@ -43,7 +43,7 @@ public class Verifier extends BasicNode {
 		this.encryptSK = cipherkP.getPrivate();
 		this.secretKey_K = sk_k;
 		this.pathNum = pathNum;
-		this.timeLapse = new long[n + 1];
+		this.timeLapse = new double[n + 1];
 		this.timeLapse[n] = users.length - 1;
 		this.proverResponses = null;
 	}

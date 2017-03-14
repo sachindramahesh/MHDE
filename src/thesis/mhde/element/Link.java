@@ -13,15 +13,15 @@ public class Link {
 	private String name;// name of the link
 	private String leftNode;// left side node that uses this link
 	private String rightNode;// right side node that uses this link
-	private int delay;// communication delay of this link
+	private double delay;// communication delay of this link
 	private byte[][] phase0_data = new byte[2][];// array to store path and
 													// signature
 	private String challenge;// challenge which is passed to the next user
 	private String response;// response which is passed to the next user
-	private long timer;// timer value to store the time taken during the
+	private double timer;// timer value to store the time taken during the
 						// protocol
 
-	public Link(String name, String leftNode, String rightNode, int delay) {
+	public Link(String name, String leftNode, String rightNode, double delay) {
 		this.flag = "";
 		this.name = name;
 		this.leftNode = leftNode;
@@ -81,7 +81,7 @@ public class Link {
 	 * 
 	 * @return the transmission time
 	 */
-	public int getDelay() {
+	public double getDelay() {
 		return this.delay;
 	}
 
@@ -150,7 +150,7 @@ public class Link {
 	 * 
 	 * @return the timer value
 	 */
-	public long getTimer() {
+	public double getTimer() {
 		return timer;
 	}
 
@@ -159,7 +159,7 @@ public class Link {
 	 * 
 	 * @param timer
 	 */
-	public void setTimer(long timer) {
+	public void setTimer(double timer) {
 		this.timer = timer;
 	}
 
