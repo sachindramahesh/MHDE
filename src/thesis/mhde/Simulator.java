@@ -4,8 +4,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.KeyPair;
-import java.security.PrivateKey;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Properties;
@@ -163,7 +161,7 @@ public class Simulator {
 
 	public static void main(String[] args) throws InterruptedException {
 
-		String topologyFile = "topologies/topology_1.tpg";
+		String topologyFile = "topologies/topology_2.tpg";
 
 		Simulator so = Simulator.getInstance();
 		boolean result = so.readTopology(topologyFile);
